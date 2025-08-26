@@ -1,0 +1,109 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {}
+        }
+    },
+    "node16": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "nodeVersion": "16"
+            }
+        }
+    },
+    "node18": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "nodeVersion": "18"
+            }
+        }
+    },
+    "node20": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "nodeVersion": "20"
+            }
+        }
+    },
+    "node21": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "nodeVersion": "21"
+            }
+        }
+    },
+    "node22": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "nodeVersion": "22"
+            }
+        }
+    },
+    "node23": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "nodeVersion": "23"
+            }
+        }
+    },
+    "node24": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "nodeVersion": "24"
+            }
+        }
+    },
+    "with_yarn": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "installYarn": true
+            }
+        }
+    },
+    "with_pnpm": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "installPnpm": true
+            }
+        }
+    },
+    "with_yarn_and_pnpm": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "installYarn": true,
+                "installPnpm": true
+            }
+        }
+    },
+    "no_npm": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "installNpm": false
+            }
+        }
+    }
+}

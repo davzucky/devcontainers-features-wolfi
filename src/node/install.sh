@@ -1,0 +1,45 @@
+#!/bin/sh
+set -e
+
+NODE_VERSION=${NODEVERSION:-"20"}
+INSTALL_NPM=${INSTALLNPM:-"true"}
+INSTALL_YARN=${INSTALLYARN:-"false"}
+INSTALL_PNPM=${INSTALLPNPM:-"false"}
+
+# Update package list
+apk update
+
+# Install Node.js
+if [ "${NODE_VERSION}" = "24" ] || \
+   [ "${NODE_VERSION}" = "23" ] || \
+   [ "${NODE_VERSION}" = "22" ] || \
+   [ "${NODE_VERSION}" = "21" ] || \
+   [ "${NODE_VERSION}" = "20" ] || \
+   [ "${NODE_VERSION}" = "18" ] || \
+   [ "${NODE_VERSION}" = "16" ]; then
+    echo "Installing Node.js ${NODE_VERSION}"
+    apk add --no-cache nodejs-${NODE_VERSION}
+else
+    echo "Unsupported Node.js version: ${NODE_VERSION}"
+    exit 1
+fi
+
+# Install npm if specified
+if [ "${INSTALL_NPM}" = "true" ]; then
+    echo "Installing npm..."
+    apk add --no-cache npm
+fi
+
+# Install Yarn if specified
+if [ "${INSTALL_YARN}" = "true" ]; then
+    echo "Installing Yarn..."
+    apk add --no-cache yarn
+fi
+
+# Install pnpm if specified
+if [ "${INSTALL_PNPM}" = "true" ]; then
+    echo "Installing pnpm..."
+    apk add --no-cache pnpm
+fi
+
+echo "Done!"

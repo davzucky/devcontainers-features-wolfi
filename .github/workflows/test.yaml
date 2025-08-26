@@ -33,6 +33,7 @@ jobs:
         features:
           - bash
           - docker-outside-of-docker
+          - node
           - python
     steps:
       - uses: actions/checkout@v4

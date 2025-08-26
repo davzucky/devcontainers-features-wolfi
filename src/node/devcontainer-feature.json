@@ -1,0 +1,47 @@
+{
+    "name": "node",
+    "id": "node",
+    "version": "1.0.0",
+    "description": "Installs Node.js and common Node.js utilities on Wolfi base images.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/node",
+    "options": {
+        "nodeVersion": {
+            "type": "string",
+            "enum": [
+                "24",
+                "23",
+                "22",
+                "21",
+                "20",
+                "18",
+                "16"
+            ],
+            "default": "20",
+            "description": "Select the Node.js version to install."
+        },
+        "installNpm": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether to install npm package manager."
+        },
+        "installYarn": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to install Yarn package manager."
+        },
+        "installPnpm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to install pnpm package manager."
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.vscode-typescript-next",
+                "bradlc.vscode-tailwindcss",
+                "esbenp.prettier-vscode"
+            ]
+        }
+    }
+}
