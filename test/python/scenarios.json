@@ -6,21 +6,21 @@
             "python": {}
         }
     },
+    "python310": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "python": {
+                "pythonVersion": "3.10"
+            }
+        }
+    },
     "python311": {
         "image": "chainguard/wolfi-base:latest",
         "features": {
             "bash": {},
             "python": {
                 "pythonVersion": "3.11"
-            }
-        }
-    },
-    "python313": {
-        "image": "chainguard/wolfi-base:latest",
-        "features": {
-            "bash": {},
-            "python": {
-                "pythonVersion": "3.13"
             }
         }
     },
@@ -33,12 +33,12 @@
             }
         }
     },
-    "python310": {
+    "python313": {
         "image": "chainguard/wolfi-base:latest",
         "features": {
             "bash": {},
             "python": {
-                "pythonVersion": "3.10"
+                "pythonVersion": "3.13"
             }
         }
     },
