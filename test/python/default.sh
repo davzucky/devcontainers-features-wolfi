@@ -10,7 +10,7 @@ check "python version" python --version
 check "pip version" pip --version
 
 # Check default Python version (3.12)
-check "python 3.12" python3.12 --version
+check "python 3.13" python3.13 --version
 
 # Ensure Ruff and uv are not installed
 check "ruff not installed" bash -c "! command -v ruff"
