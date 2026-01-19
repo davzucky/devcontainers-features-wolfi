@@ -15,7 +15,7 @@ Installs Python and common Python utilities on Wolfi base images.
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| pythonVersion | Select the Python version to install. | string | 3.12 |
+| pythonVersion | Select the Python version to install. | string | 3.13 |
 | installRuff | Whether to install Ruff, a fast Python linter and code formatter. | boolean | false |
 | installUV | Whether to install uv, a fast Python package installer and resolver. | boolean | false |
 
