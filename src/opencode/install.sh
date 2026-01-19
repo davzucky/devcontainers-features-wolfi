@@ -109,6 +109,7 @@ TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
     if [ -f "${SOURCE_AUTH}" ] && [ ! -f "${TARGET_AUTH}" ]; then
         mkdir -p "$(dirname "${TARGET_AUTH}")"
         cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
+        chmod 600 "${TARGET_AUTH}"
         if [ "$(id -u)" = "0" ]; then
             TARGET_GID=$(id -g "${TARGET_USER}" 2>/dev/null || echo "0")
             chown "${TARGET_USER}":"${TARGET_GID}" "${TARGET_AUTH}"
