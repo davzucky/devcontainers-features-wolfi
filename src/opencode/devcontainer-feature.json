@@ -21,7 +21,7 @@
             "source": "${localEnv:HOME}",
             "target": "/tmp/opencode-host-home",
             "type": "bind",
-            "readOnly": true
+            "readonly": true
         }
     ]
 }

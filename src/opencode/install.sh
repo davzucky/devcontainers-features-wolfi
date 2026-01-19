@@ -31,7 +31,7 @@ if command -v opencode >/dev/null 2>&1; then
         echo "opencode upgrade complete"
         OPENCODE_INSTALLED="true"
     else
-        CURRENT_VERSION=$(opencode --version 2>/dev/null | awk '{print $1}')
+        CURRENT_VERSION=$(opencode --version 2>/dev/null | awk '{print $NF}')
         if [ "${CURRENT_VERSION}" = "${VERSION}" ] || [ "${CURRENT_VERSION}" = "v${VERSION}" ]; then
             echo "opencode already installed (${CURRENT_VERSION}), skipping"
             OPENCODE_INSTALLED="true"
