@@ -25,10 +25,18 @@ apk add --no-cache ca-certificates curl libarchive-tools
 
 OPENCODE_INSTALLED="false"
 if command -v opencode >/dev/null 2>&1; then
-    echo "opencode already installed, running upgrade"
-    opencode upgrade
-    echo "opencode upgrade complete"
-    OPENCODE_INSTALLED="true"
+    if [ "${VERSION}" = "latest" ]; then
+        echo "opencode already installed, running upgrade"
+        opencode upgrade
+        echo "opencode upgrade complete"
+        OPENCODE_INSTALLED="true"
+    else
+        CURRENT_VERSION=$(opencode --version 2>/dev/null | awk '{print $1}')
+        if [ "${CURRENT_VERSION}" = "${VERSION}" ] || [ "${CURRENT_VERSION}" = "v${VERSION}" ]; then
+            echo "opencode already installed (${CURRENT_VERSION}), skipping"
+            OPENCODE_INSTALLED="true"
+        fi
+    fi
 fi
 
 if [ "${OPENCODE_INSTALLED}" = "false" ]; then
@@ -52,6 +60,7 @@ if [ "${OPENCODE_INSTALLED}" = "false" ]; then
 
     DOWNLOAD_URL="https://github.com/anomalyco/opencode/releases/download/${VERSION_TAG}/${ARCHIVE_NAME}"
     WORKDIR=$(mktemp -d)
+    trap "rm -rf '${WORKDIR}'" EXIT
 
     if ! curl -sSL "${DOWNLOAD_URL}" -o "${WORKDIR}/${ARCHIVE_NAME}"; then
         echo "Failed to download opencode from ${DOWNLOAD_URL}"
@@ -97,13 +106,15 @@ fi
 
 TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
 
-if [ -f "${SOURCE_AUTH}" ] && [ ! -f "${TARGET_AUTH}" ]; then
-    mkdir -p "$(dirname "${TARGET_AUTH}")"
-    cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
-    if [ "$(id -u)" = "0" ]; then
-        chown "${TARGET_USER}":"${TARGET_USER}" "${TARGET_AUTH}"
+    if [ -f "${SOURCE_AUTH}" ] && [ ! -f "${TARGET_AUTH}" ]; then
+        mkdir -p "$(dirname "${TARGET_AUTH}")"
+        cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
+        if [ "$(id -u)" = "0" ]; then
+            TARGET_GID=$(id -g "${TARGET_USER}" 2>/dev/null || echo "0")
+            chown "${TARGET_USER}":"${TARGET_GID}" "${TARGET_AUTH}"
+        fi
     fi
-fi
+
 EOF
 
     chmod +x /usr/local/share/opencode-auth-copy.sh
