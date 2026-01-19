@@ -1,0 +1,18 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "opencode": {}
+        }
+    },
+    "with_auth": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "opencode": {
+                "copyAuth": true
+            }
+        }
+    }
+}
