@@ -20,10 +20,7 @@
         {
             "source": "${localEnv:HOME}",
             "target": "/tmp/opencode-host-home",
-            "type": "bind",
-            "options": [
-                "ro"
-            ]
+            "type": "bind,readonly"
         }
     ]
 }
