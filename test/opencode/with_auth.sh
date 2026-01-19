@@ -13,12 +13,14 @@ if [ -z "${TARGET_HOME}" ]; then
 fi
 
 TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
+SOURCE_AUTH="/tmp/opencode-host-home/.local/share/opencode/auth.json"
 
-if [ ! -f "${TARGET_AUTH}" ]; then
-    mkdir -p "$(dirname "${TARGET_AUTH}")"
-    echo "test-auth" > "${TARGET_AUTH}"
+check "auth copy hook installed" test -f /etc/profile.d/opencode-auth-copy.sh
+
+if [ -f "${SOURCE_AUTH}" ]; then
+    check "auth copied" test -f "${TARGET_AUTH}"
+else
+    check "auth missing on host" test ! -f "${TARGET_AUTH}"
 fi
-
-check "auth copied" test -f "${TARGET_AUTH}"
 
 reportResults

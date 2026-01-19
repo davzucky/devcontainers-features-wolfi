@@ -15,5 +15,13 @@
             "default": false,
             "description": "Whether to copy opencode auth.json from the host into the container."
         }
-    }
+    },
+    "mounts": [
+        {
+            "source": "${localEnv:HOME}",
+            "target": "/tmp/opencode-host-home",
+            "type": "bind",
+            "readOnly": true
+        }
+    ]
 }

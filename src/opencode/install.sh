@@ -73,34 +73,41 @@ if ! command -v opencode >/dev/null 2>&1; then
 fi
 
 if [ "${COPY_AUTH}" = "true" ]; then
-    if [ -z "${_REMOTE_USER}" ] || [ "${_REMOTE_USER}" = "root" ] || [ "${_REMOTE_USER}" = "0" ]; then
-        TARGET_USER="root"
-    else
-        TARGET_USER="${_REMOTE_USER}"
-    fi
+    echo "Installing opencode auth copy hook"
+    mkdir -p /usr/local/share /etc/profile.d
 
+    cat << 'EOF' > /usr/local/share/opencode-auth-copy.sh
+#!/bin/sh
+set -e
+
+SOURCE_AUTH="/tmp/opencode-host-home/.local/share/opencode/auth.json"
+
+TARGET_USER="${_REMOTE_USER:-root}"
+if [ "${TARGET_USER}" = "0" ] || [ "${TARGET_USER}" = "root" ]; then
+    TARGET_USER="root"
+fi
+
+TARGET_HOME="${_REMOTE_USER_HOME}"
+if [ -z "${TARGET_HOME}" ]; then
+    TARGET_HOME=$(grep -E "^${TARGET_USER}:" /etc/passwd | cut -d: -f6)
+fi
+if [ -z "${TARGET_HOME}" ]; then
     TARGET_HOME="/root"
-    if [ -n "${_REMOTE_USER_HOME}" ]; then
-        TARGET_HOME="${_REMOTE_USER_HOME}"
-    else
-        TARGET_HOME_TMP=$(grep -E "^${TARGET_USER}:" /etc/passwd | cut -d: -f6)
-        if [ -n "${TARGET_HOME_TMP}" ]; then
-            TARGET_HOME="${TARGET_HOME_TMP}"
-        fi
-    fi
+fi
 
-    SOURCE_AUTH="${HOME}/.local/share/opencode/auth.json"
-    TARGET_DIR="${TARGET_HOME}/.local/share/opencode"
-    TARGET_AUTH="${TARGET_DIR}/auth.json"
+TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
 
-    if [ -f "${SOURCE_AUTH}" ]; then
-        mkdir -p "${TARGET_DIR}"
-        cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
+if [ -f "${SOURCE_AUTH}" ] && [ ! -f "${TARGET_AUTH}" ]; then
+    mkdir -p "$(dirname "${TARGET_AUTH}")"
+    cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
+    if [ "$(id -u)" = "0" ]; then
         chown "${TARGET_USER}":"${TARGET_USER}" "${TARGET_AUTH}"
-        echo "Copied opencode auth.json to ${TARGET_AUTH}"
-    else
-        echo "opencode auth.json not found at ${SOURCE_AUTH}, skipping copy"
     fi
+fi
+EOF
+
+    chmod +x /usr/local/share/opencode-auth-copy.sh
+    ln -sf /usr/local/share/opencode-auth-copy.sh /etc/profile.d/opencode-auth-copy.sh
 fi
 
 echo "opencode installed successfully"
