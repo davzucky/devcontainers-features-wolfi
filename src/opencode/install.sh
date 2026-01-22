@@ -93,9 +93,13 @@ STAGED_AUTH="${WORKSPACE_DIR}/.opencode-auth.json"
 FLAG_FILE="/usr/local/share/opencode-copyauth.flag"
 TARGET_AUTH="${HOME}/.local/share/opencode/auth.json"
 
-if [ -f "${FLAG_FILE}" ] && [ -f "${STAGED_AUTH}" ]; then
+if [ -f "${FLAG_FILE}" ]; then
     mkdir -p "$(dirname "${TARGET_AUTH}")"
-    cp "${STAGED_AUTH}" "${TARGET_AUTH}"
+    if [ -f "${STAGED_AUTH}" ]; then
+        cp "${STAGED_AUTH}" "${TARGET_AUTH}"
+    else
+        printf "{}" > "${TARGET_AUTH}"
+    fi
     chmod 600 "${TARGET_AUTH}"
 fi
 
