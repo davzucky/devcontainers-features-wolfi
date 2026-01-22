@@ -1,7 +1,7 @@
 {
     "name": "opencode",
     "id": "opencode",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Installs opencode CLI on Wolfi base images.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/opencode",
     "options": {
@@ -16,11 +16,6 @@
             "description": "Whether to copy opencode auth.json from the host into the container."
         }
     },
-    "mounts": [
-        {
-            "source": "${localEnv:HOME}",
-            "target": "/tmp/opencode-host-home",
-            "type": "bind"
-        }
-    ]
+    "initializeCommand": "sh -c 'SRC=\"$HOME/.local/share/opencode/auth.json\"; DEST=\"${localWorkspaceFolder}/.opencode-auth.json\"; if [ -f \"$SRC\" ]; then cp \"$SRC\" \"$DEST\"; else printf \"{}\" > \"$DEST\"; fi; chmod 600 \"$DEST\"'",
+    "postStartCommand": "/usr/local/share/opencode-auth-copy.sh"
 }
