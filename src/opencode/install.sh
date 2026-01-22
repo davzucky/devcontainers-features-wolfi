@@ -88,23 +88,14 @@ cat << 'EOF' > /usr/local/share/opencode-auth-copy.sh
 #!/bin/sh
 set -e
 
-WORKSPACE_DIR="${PWD}"
-STAGED_AUTH="${WORKSPACE_DIR}/.opencode-auth.json"
+SOURCE_AUTH="/tmp/opencode-host-home/auth.json"
 FLAG_FILE="/usr/local/share/opencode-copyauth.flag"
 TARGET_AUTH="${HOME}/.local/share/opencode/auth.json"
 
-if [ -f "${FLAG_FILE}" ]; then
+if [ -f "${FLAG_FILE}" ] && [ -f "${SOURCE_AUTH}" ]; then
     mkdir -p "$(dirname "${TARGET_AUTH}")"
-    if [ -f "${STAGED_AUTH}" ]; then
-        cp "${STAGED_AUTH}" "${TARGET_AUTH}"
-    else
-        printf "{}" > "${TARGET_AUTH}"
-    fi
+    cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
     chmod 600 "${TARGET_AUTH}"
-fi
-
-if [ -f "${STAGED_AUTH}" ]; then
-    rm -f "${STAGED_AUTH}"
 fi
 
 EOF

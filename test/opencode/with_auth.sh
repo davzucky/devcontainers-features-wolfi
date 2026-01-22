@@ -16,11 +16,15 @@ if [ -z "${TARGET_HOME}" ]; then
 fi
 
 TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
-STAGED_AUTH="$(pwd)/.opencode-auth.json"
+SOURCE_AUTH="/tmp/opencode-host-home/auth.json"
 
 check "auth copy hook installed" test -f /usr/local/share/opencode-auth-copy.sh
 check "auth copy flag installed" test -f /usr/local/share/opencode-copyauth.flag
-check "auth copied" test -f "${TARGET_AUTH}"
-check "staged auth removed" test ! -f "${STAGED_AUTH}"
+
+if [ -f "${SOURCE_AUTH}" ]; then
+    check "auth copied" test -f "${TARGET_AUTH}"
+else
+    check "auth missing on host" test ! -f "${TARGET_AUTH}"
+fi
 
 reportResults

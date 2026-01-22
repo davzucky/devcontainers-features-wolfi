@@ -16,6 +16,12 @@
             "description": "Whether to copy opencode auth.json from the host into the container."
         }
     },
-    "initializeCommand": "sh -c 'SRC=\"$HOME/.local/share/opencode/auth.json\"; DEST=\"${localWorkspaceFolder}/.opencode-auth.json\"; if [ -f \"$SRC\" ]; then cp \"$SRC\" \"$DEST\"; else printf \"{}\" > \"$DEST\"; fi; chmod 600 \"$DEST\"'",
+    "mounts": [
+        {
+            "source": "${localEnv:HOME}/.local/share/opencode",
+            "target": "/tmp/opencode-host-home",
+            "type": "bind"
+        }
+    ],
     "postStartCommand": "/usr/local/share/opencode-auth-copy.sh"
 }
