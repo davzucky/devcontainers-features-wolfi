@@ -14,7 +14,6 @@ jobs:
       matrix:
         features:
           - bash
-          - opencode
         baseImage:
           - chainguard/wolfi-base:latest
     steps:
