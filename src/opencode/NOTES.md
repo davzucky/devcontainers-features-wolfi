@@ -6,7 +6,8 @@
 
 ```json
 "initializeCommand": {
-    "mkdir-posix": "mkdir -p $HOME/.local/share/opencode || true"
+    "mkdir-posix": "mkdir -p $HOME/.local/share/opencode || true",
+    "mkdir-windows": "powershell -Command \"New-Item -ItemType Directory -Force $env:USERPROFILE\\.local\\share\\opencode | Out-Null\""
 }
 ```
 - If `opencode` is already installed, the installer runs `opencode upgrade` and skips reinstalling the binary.
