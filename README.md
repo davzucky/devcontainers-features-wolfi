@@ -11,8 +11,8 @@ The following features are available:
 - [bash](./src/bash/README.md) - Installs bash and common shell utilities on Wolfi base images
 - [docker-outside-of-docker](./src/docker-outside-of-docker/README.md) - Enables Docker-in-Docker functionality for development containers
 - [node](./src/node/README.md) - Installs Node.js and common Node.js utilities on Wolfi base images
+- [opencode](./src/opencode/README.md) - Installs opencode CLI on Wolfi base images
 - [python](./src/python/README.md) - Installs Python and common Python utilities on Wolfi base images
 - [user](./src/user/README.md) - Manages user creation and configuration in development containers
 
 Each feature is designed to work seamlessly with Wolfi base images and provides a secure, lean development environment.
-
