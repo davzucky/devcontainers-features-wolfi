@@ -14,6 +14,7 @@ jobs:
       matrix:
         features:
           - bash
+          - opencode
         baseImage:
           - chainguard/wolfi-base:latest
     steps:
@@ -34,6 +35,7 @@ jobs:
           - bash
           - docker-outside-of-docker
           - node
+          - opencode
           - python
     steps:
       - uses: actions/checkout@v4
