@@ -18,8 +18,8 @@
     },
     "mounts": [
         {
-            "source": "${localEnv:HOME}/.local/share/opencode",
-            "target": "/tmp/opencode-host-home",
+            "source": "${localEnv:TEMP:/tmp}/opencode",
+            "target": "/tmp/opencode-host-tmp",
             "type": "bind"
         }
     ],

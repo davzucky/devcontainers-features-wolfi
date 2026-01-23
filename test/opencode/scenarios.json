@@ -2,7 +2,7 @@
     "default": {
         "image": "chainguard/wolfi-base:latest",
         "initializeCommand": {
-            "mkdir-posix": "mkdir -p $HOME/.local/share/opencode || true"
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/opencode || true"
         },
         "features": {
             "bash": {},
@@ -12,7 +12,7 @@
     "with_auth": {
         "image": "chainguard/wolfi-base:latest",
         "initializeCommand": {
-            "mkdir-posix": "mkdir -p $HOME/.local/share/opencode || true"
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/opencode || true"
         },
         "features": {
             "bash": {},
