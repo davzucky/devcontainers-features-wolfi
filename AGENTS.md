@@ -40,6 +40,9 @@ Guidance for agentic coding agents working in this repo.
 ### Run against a specific base image
 - `devcontainer features test -f <feature> -i chainguard/wolfi-base:latest .`.
 
+### CI coverage
+- When adding a new feature, include it in `.github/workflows/test.yaml` under the `test-scenarios` matrix.
+
 ## Code style and conventions
 ### Shell scripts (`install.sh`)
 - Use `#!/bin/sh` and `set -e`.
@@ -83,4 +86,3 @@ Guidance for agentic coding agents working in this repo.
 - Update tests and scenarios whenever options change.
 - Keep test coverage for both enabled/disabled optional tooling.
 - Use ASCII characters unless the file already uses Unicode.
-
