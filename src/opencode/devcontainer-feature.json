@@ -1,7 +1,7 @@
 {
     "name": "opencode",
     "id": "opencode",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Installs opencode CLI on Wolfi base images.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/opencode",
     "options": {
@@ -18,8 +18,8 @@
     },
     "mounts": [
         {
-            "source": "${localEnv:HOME}/.local/share/opencode",
-            "target": "/tmp/opencode-host-home",
+            "source": "${localEnv:TEMP:/tmp}/opencode",
+            "target": "/tmp/opencode-host-tmp",
             "type": "bind"
         }
     ],

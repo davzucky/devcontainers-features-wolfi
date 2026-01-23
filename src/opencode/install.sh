@@ -88,7 +88,7 @@ cat << 'EOF' > /usr/local/share/opencode-auth-copy.sh
 #!/bin/sh
 set -e
 
-SOURCE_AUTH="/tmp/opencode-host-home/auth.json"
+SOURCE_AUTH="/tmp/opencode-host-tmp/auth.json"
 FLAG_FILE="/usr/local/share/opencode-copyauth.flag"
 TARGET_AUTH="${HOME}/.local/share/opencode/auth.json"
 

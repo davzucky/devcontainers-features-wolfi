@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+TEMP_DIR=${TEMP:-"/tmp"}
+TARGET_DIR="${TEMP_DIR}/opencode"
+TARGET_AUTH="${TARGET_DIR}/auth.json"
+
+if [ -n "${OPENCODE_CONFIG_DIR:-}" ]; then
+    SOURCE_AUTH="${OPENCODE_CONFIG_DIR}/auth.json"
+else
+    SOURCE_AUTH="${HOME}/.local/share/opencode/auth.json"
+fi
+
+mkdir -p "${TARGET_DIR}"
+
+if [ -f "${SOURCE_AUTH}" ]; then
+    cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
+    chmod 600 "${TARGET_AUTH}"
+fi

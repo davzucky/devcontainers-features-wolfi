@@ -1,13 +1,14 @@
 ## Usage notes
 
 - `version` supports `latest` (resolved from the GitHub releases latest tag) or an explicit version (with or without a leading `v`).
-- `copyAuth` enables a startup hook that copies `/tmp/opencode-host-home/auth.json` into `$HOME/.local/share/opencode/auth.json`.
-- The feature bind-mounts `${localEnv:HOME}/.local/share/opencode` to `/tmp/opencode-host-home`. Ensure the host directory exists by adding this to your `devcontainer.json`:
+- `copyAuth` enables a startup hook that copies `/tmp/opencode-host-tmp/auth.json` into `$HOME/.local/share/opencode/auth.json`.
+- The feature bind-mounts `${localEnv:TEMP:/tmp}/opencode` to `/tmp/opencode-host-tmp`.
+- Use the host scripts in `src/opencode/host/opencode-auth-copy` (POSIX) and `src/opencode/host/opencode-auth-copy.cmd` (Windows). Call the shared base name `opencode-auth-copy` from `initializeCommand` so each OS resolves the right script and copy `auth.json` from either:
+  - `${OPENCODE_CONFIG_DIR}/auth.json` when `OPENCODE_CONFIG_DIR` is set, or
+  - the default storage location (`~/.local/share/opencode/auth.json` on macOS/Linux, `%USERPROFILE%\.local\share\opencode\auth.json` on Windows).
+- Example `initializeCommand` (copy both scripts into your repo, for example `.devcontainer/`):
 
 ```json
-"initializeCommand": {
-    "mkdir-posix": "mkdir -p $HOME/.local/share/opencode || true",
-    "mkdir-windows": "powershell -Command \"New-Item -ItemType Directory -Force $env:USERPROFILE\\.local\\share\\opencode | Out-Null\""
-}
+"initializeCommand": ".devcontainer/opencode-auth-copy"
 ```
 - If `opencode` is already installed, the installer runs `opencode upgrade` and skips reinstalling the binary.
