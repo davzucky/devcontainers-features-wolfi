@@ -33,6 +33,7 @@ jobs:
         features:
           - bash
           - docker-outside-of-docker
+          - claude
           - node
           - opencode
           - python

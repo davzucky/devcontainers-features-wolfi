@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+TEMP_DIR=${TEMP:-"/tmp"}
+TARGET_DIR="${TEMP_DIR}/claude"
+TARGET_SETTINGS="${TARGET_DIR}/settings.json"
+
+if [ -n "${CLAUDE_CONFIG_DIR:-}" ]; then
+    SOURCE_SETTINGS="${CLAUDE_CONFIG_DIR}/settings.json"
+else
+    SOURCE_SETTINGS="${HOME}/.claude/settings.json"
+fi
+
+mkdir -p "${TARGET_DIR}"
+
+if [ -f "${SOURCE_SETTINGS}" ]; then
+    cp "${SOURCE_SETTINGS}" "${TARGET_SETTINGS}"
+    chmod 600 "${TARGET_SETTINGS}"
+fi

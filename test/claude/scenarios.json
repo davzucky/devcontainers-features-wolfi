@@ -1,0 +1,24 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/claude || true"
+        },
+        "features": {
+            "bash": {},
+            "claude": {}
+        }
+    },
+    "with_settings": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/claude || true"
+        },
+        "features": {
+            "bash": {},
+            "claude": {
+                "copySettings": true
+            }
+        }
+    }
+}
