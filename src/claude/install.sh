@@ -85,6 +85,7 @@ if [ "${CLAUDE_INSTALLED}" = "false" ]; then
         exit 1
     fi
 
+    mkdir -p /usr/local/bin
     install -m 0755 "${WORKDIR}/claude" /usr/local/bin/claude
 fi
 
