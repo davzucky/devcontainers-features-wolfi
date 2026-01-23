@@ -11,7 +11,7 @@ TARGET_HOME="${HOME}"
 if [ -z "${TARGET_HOME}" ]; then
     TARGET_HOME="${_REMOTE_USER_HOME}"
 fi
-if [ -z "${TARGET_HOME}" ]; then
+if [ -z "${TARGET_HOME}" ] && [ -n "${_REMOTE_USER}" ]; then
     TARGET_HOME=$(grep -E "^${_REMOTE_USER}:" /etc/passwd | cut -d: -f6)
 fi
 if [ -z "${TARGET_HOME}" ]; then

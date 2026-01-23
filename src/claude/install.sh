@@ -118,6 +118,8 @@ chmod +x /usr/local/share/claude-settings-copy.sh
 if [ "${COPY_SETTINGS}" = "true" ]; then
     echo "Enabling Claude Code settings copy"
     : > /usr/local/share/claude-copysettings.flag
+else
+    rm -f /usr/local/share/claude-copysettings.flag
 fi
 
 echo "Claude Code installed successfully"
