@@ -1,0 +1,27 @@
+{
+    "name": "claude",
+    "id": "claude",
+    "version": "1.0.0",
+    "description": "Installs Claude Code CLI on Wolfi base images.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/claude",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "Select the Claude Code CLI version to install."
+        },
+        "copySettings": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy Claude Code settings.json from the host into the container."
+        }
+    },
+    "mounts": [
+        {
+            "source": "${localEnv:TEMP:/tmp}/claude",
+            "target": "/tmp/claude-host-tmp",
+            "type": "bind"
+        }
+    ],
+    "postStartCommand": "/usr/local/share/claude-settings-copy.sh"
+}
