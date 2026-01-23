@@ -1,7 +1,7 @@
 {
     "name": "opencode",
     "id": "opencode",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Installs opencode CLI on Wolfi base images.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/opencode",
     "options": {
