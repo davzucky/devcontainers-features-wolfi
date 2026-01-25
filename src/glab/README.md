@@ -15,6 +15,7 @@ Installs glab CLI on Wolfi base images.
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
+| version | Version of glab to install (use 'latest' or a specific apk version). | string | latest |
 | copyConfig | Whether to copy glab config.yml from the host into the container. | boolean | false |
 | useGitAuth | Whether to configure git credential helper for the repository remote using glab. | boolean | false |
 

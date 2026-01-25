@@ -2,7 +2,8 @@
 setlocal
 
 set "TEMP_DIR=%TEMP%"
-if "%TEMP_DIR%"=="" set "TEMP_DIR=/tmp"
+if "%TEMP_DIR%"=="" set "TEMP_DIR=%TMP%"
+if "%TEMP_DIR%"=="" set "TEMP_DIR=%SystemRoot%\Temp"
 
 set "TARGET_DIR=%TEMP_DIR%\glab"
 set "TARGET_CONFIG=%TARGET_DIR%\config.yml"

@@ -1,13 +1,18 @@
 #!/bin/sh
 set -e
 
+VERSION=${VERSION:-"latest"}
 COPY_CONFIG=${COPYCONFIG:-"false"}
 USE_GIT_AUTH=${USEGITAUTH:-"false"}
 
 echo "Installing glab..."
 
 apk update
-apk add --no-cache glab
+if [ "${VERSION}" = "latest" ]; then
+    apk add --no-cache glab
+else
+    apk add --no-cache "glab=${VERSION}"
+fi
 
 if [ "${USE_GIT_AUTH}" = "true" ]; then
     apk add --no-cache git

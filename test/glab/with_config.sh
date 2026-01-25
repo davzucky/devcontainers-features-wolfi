@@ -9,7 +9,9 @@ if [ -z "${TARGET_HOME}" ]; then
     TARGET_HOME="${_REMOTE_USER_HOME}"
 fi
 if [ -z "${TARGET_HOME}" ]; then
-    TARGET_HOME=$(grep -E "^${_REMOTE_USER}:" /etc/passwd | cut -d: -f6)
+    if [ -n "${_REMOTE_USER:-}" ]; then
+        TARGET_HOME=$(grep -E "^${_REMOTE_USER}:" /etc/passwd | cut -d: -f6)
+    fi
 fi
 if [ -z "${TARGET_HOME}" ]; then
     TARGET_HOME="/root"
