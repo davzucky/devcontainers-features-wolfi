@@ -37,11 +37,27 @@ if [ -f "${FLAG_FILE}" ] && [ -f "${SOURCE_CONFIG}" ]; then
 fi
 
 if [ -f "${AUTH_FLAG_FILE}" ]; then
-    if [ -z "${WORKSPACE_FOLDER:-}" ]; then
-        echo "WORKSPACE_FOLDER not set; skipping glab git auth configuration"
-    else
-        if command -v git >/dev/null 2>&1; then
-            REMOTE_URL=$(git -C "${WORKSPACE_FOLDER}" remote get-url origin 2>/dev/null || true)
+    if command -v git >/dev/null 2>&1; then
+        WORKSPACE_DIR="${WORKSPACE_FOLDER:-}"
+        if [ -z "${WORKSPACE_DIR}" ]; then
+            CURRENT_DIR=$(pwd)
+            if git -C "${CURRENT_DIR}" rev-parse --show-toplevel >/dev/null 2>&1; then
+                WORKSPACE_DIR=$(git -C "${CURRENT_DIR}" rev-parse --show-toplevel)
+            fi
+        fi
+        if [ -z "${WORKSPACE_DIR}" ] && [ -d "/workspaces" ]; then
+            for candidate in /workspaces/*; do
+                if [ -d "${candidate}" ] && git -C "${candidate}" rev-parse --show-toplevel >/dev/null 2>&1; then
+                    WORKSPACE_DIR=$(git -C "${candidate}" rev-parse --show-toplevel)
+                    break
+                fi
+            done
+        fi
+
+        if [ -z "${WORKSPACE_DIR}" ]; then
+            echo "Workspace not found; skipping glab git auth configuration"
+        else
+            REMOTE_URL=$(git -C "${WORKSPACE_DIR}" remote get-url origin 2>/dev/null || true)
             if [ -z "${REMOTE_URL}" ]; then
                 echo "No origin remote found; skipping glab git auth configuration"
             else
@@ -55,9 +71,9 @@ if [ -f "${AUTH_FLAG_FILE}" ]; then
                         ;;
                 esac
             fi
-        else
-            echo "git not found; skipping glab git auth configuration"
         fi
+    else
+        echo "git not found; skipping glab git auth configuration"
     fi
 fi
 
