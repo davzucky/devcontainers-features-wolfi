@@ -8,13 +8,11 @@
         "nodeVersion": {
             "type": "string",
             "enum": [
+                "25",
                 "24",
-                "23",
                 "22",
-                "21",
                 "20",
-                "18",
-                "16"
+                "18"
             ],
             "default": "20",
             "description": "Select the Node.js version to install."

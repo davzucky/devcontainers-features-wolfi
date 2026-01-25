@@ -42,6 +42,15 @@
             }
         }
     },
+    "python314": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "python": {
+                "pythonVersion": "3.14"
+            }
+        }
+    },
     "with_ruff": {
         "image": "chainguard/wolfi-base:latest",
         "features": {

@@ -9,8 +9,8 @@ source dev-container-features-test-lib
 check "node version" node --version
 check "npm version" npm --version
 
-# Check Node.js 21
-check "node 21" node --version | grep "v21"
+# Check Node.js 25
+check "node 25" node --version | grep "v25"
 
 # Ensure Yarn and pnpm are not installed
 check "yarn not installed" bash -c "! command -v yarn"

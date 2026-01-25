@@ -10,13 +10,11 @@ INSTALL_PNPM=${INSTALLPNPM:-"false"}
 apk update
 
 # Install Node.js
-if [ "${NODE_VERSION}" = "24" ] || \
-   [ "${NODE_VERSION}" = "23" ] || \
+if [ "${NODE_VERSION}" = "25" ] || \
+   [ "${NODE_VERSION}" = "24" ] || \
    [ "${NODE_VERSION}" = "22" ] || \
-   [ "${NODE_VERSION}" = "21" ] || \
    [ "${NODE_VERSION}" = "20" ] || \
-   [ "${NODE_VERSION}" = "18" ] || \
-   [ "${NODE_VERSION}" = "16" ]; then
+   [ "${NODE_VERSION}" = "18" ]; then
     echo "Installing Node.js ${NODE_VERSION}"
     apk add --no-cache nodejs-${NODE_VERSION}
 else

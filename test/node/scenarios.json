@@ -6,15 +6,6 @@
             "node": {}
         }
     },
-    "node16": {
-        "image": "chainguard/wolfi-base:latest",
-        "features": {
-            "bash": {},
-            "node": {
-                "nodeVersion": "16"
-            }
-        }
-    },
     "node18": {
         "image": "chainguard/wolfi-base:latest",
         "features": {
@@ -33,15 +24,6 @@
             }
         }
     },
-    "node21": {
-        "image": "chainguard/wolfi-base:latest",
-        "features": {
-            "bash": {},
-            "node": {
-                "nodeVersion": "21"
-            }
-        }
-    },
     "node22": {
         "image": "chainguard/wolfi-base:latest",
         "features": {
@@ -51,21 +33,21 @@
             }
         }
     },
-    "node23": {
-        "image": "chainguard/wolfi-base:latest",
-        "features": {
-            "bash": {},
-            "node": {
-                "nodeVersion": "23"
-            }
-        }
-    },
     "node24": {
         "image": "chainguard/wolfi-base:latest",
         "features": {
             "bash": {},
             "node": {
                 "nodeVersion": "24"
+            }
+        }
+    },
+    "node25": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "node": {
+                "nodeVersion": "25"
             }
         }
     },
