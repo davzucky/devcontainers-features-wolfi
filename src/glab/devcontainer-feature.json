@@ -1,0 +1,32 @@
+{
+    "name": "glab",
+    "id": "glab",
+    "version": "1.0.0",
+    "description": "Installs glab CLI on Wolfi base images.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/glab",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "Version of glab to install (use 'latest' or a specific apk version)."
+        },
+        "copyConfig": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy glab config.yml from the host into the container."
+        },
+        "useGitAuth": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to configure git credential helper for the repository remote using glab."
+        }
+    },
+    "mounts": [
+        {
+            "source": "${localEnv:TEMP:/tmp}/glab",
+            "target": "/tmp/glab-host-tmp",
+            "type": "bind"
+        }
+    ],
+    "postStartCommand": "/usr/local/share/glab-config-copy.sh"
+}

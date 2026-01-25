@@ -1,0 +1,36 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/glab || true"
+        },
+        "features": {
+            "bash": {},
+            "glab": {}
+        }
+    },
+    "with_config": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/glab || true"
+        },
+        "features": {
+            "bash": {},
+            "glab": {
+                "copyConfig": true
+            }
+        }
+    },
+    "with_git_auth": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/glab || true"
+        },
+        "features": {
+            "bash": {},
+            "glab": {
+                "useGitAuth": true
+            }
+        }
+    }
+}

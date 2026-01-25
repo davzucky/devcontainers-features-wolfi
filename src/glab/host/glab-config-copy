@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+TEMP_DIR=${TEMP:-"/tmp"}
+TARGET_DIR="${TEMP_DIR}/glab"
+TARGET_CONFIG="${TARGET_DIR}/config.yml"
+SOURCE_CONFIG="${HOME}/.config/glab-cli/config.yml"
+
+mkdir -p "${TARGET_DIR}"
+
+if [ -f "${SOURCE_CONFIG}" ]; then
+    cp "${SOURCE_CONFIG}" "${TARGET_CONFIG}"
+    chmod 600 "${TARGET_CONFIG}"
+fi
