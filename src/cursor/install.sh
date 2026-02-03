@@ -24,6 +24,9 @@ if [ "${VERSION}" != "latest" ]; then
     VERSION_TAG="${VERSION}"
 fi
 
+apk update
+apk add --no-cache ca-certificates curl libgcc libstdc++
+
 INSTALL_DIR="/usr/local/lib/cursor-agent"
 VERSION_FILE="${INSTALL_DIR}/VERSION"
 
