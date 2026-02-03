@@ -1,0 +1,120 @@
+#!/bin/sh
+set -e
+
+VERSION=${VERSION:-"latest"}
+COPY_AUTH=${COPYAUTH:-"false"}
+
+# Checks if packages are installed and installs them if not
+install_if_not() {
+    if [ -z "$(apk list -I "$@")" ]; then
+        echo "Install package $@"
+        apk add --no-cache "$@"
+    fi
+}
+
+ARCH=$(uname -m)
+ARCH_SUFFIX=""
+
+case "${ARCH}" in
+    x86_64|amd64)
+        ARCH_SUFFIX="x64"
+        ;;
+    aarch64|arm64)
+        ARCH_SUFFIX="arm64"
+        ;;
+    *)
+        echo "Unsupported architecture: ${ARCH}"
+        exit 1
+        ;;
+esac
+
+VERSION_TAG="2026.01.28-fd13201"
+if [ "${VERSION}" != "latest" ]; then
+    VERSION_TAG="${VERSION}"
+fi
+
+apk update
+install_if_not ca-certificates
+install_if_not curl
+install_if_not libgcc
+install_if_not libstdc++
+
+INSTALL_DIR="/usr/local/lib/cursor-agent"
+VERSION_FILE="${INSTALL_DIR}/VERSION"
+
+if [ -f "${VERSION_FILE}" ]; then
+    INSTALLED_VERSION=$(cat "${VERSION_FILE}")
+    if [ "${INSTALLED_VERSION}" = "${VERSION_TAG}" ] \
+        && [ -x "${INSTALL_DIR}/cursor-agent" ] \
+        && [ -x "/usr/local/bin/agent" ] \
+        && [ -x "/usr/local/bin/cursor-agent" ]; then
+        echo "Cursor Agent already installed (${INSTALLED_VERSION}), skipping"
+        exit 0
+    fi
+fi
+
+DOWNLOAD_URL="https://downloads.cursor.com/lab/${VERSION_TAG}/linux/${ARCH_SUFFIX}/agent-cli-package.tar.gz"
+
+WORKDIR=$(mktemp -d)
+trap "rm -rf '${WORKDIR}'" EXIT
+
+echo "Downloading Cursor Agent from ${DOWNLOAD_URL}"
+if ! curl -fSL "${DOWNLOAD_URL}" -o "${WORKDIR}/agent-cli-package.tar.gz"; then
+    echo "Failed to download Cursor Agent package"
+    exit 1
+fi
+
+mkdir -p "${WORKDIR}/extract"
+if ! tar --strip-components=1 -xzf "${WORKDIR}/agent-cli-package.tar.gz" -C "${WORKDIR}/extract"; then
+    echo "Failed to extract Cursor Agent package"
+    exit 1
+fi
+
+if [ ! -f "${WORKDIR}/extract/cursor-agent" ]; then
+    echo "Cursor Agent binary not found in archive"
+    exit 1
+fi
+
+rm -rf "${INSTALL_DIR}"
+mkdir -p "${INSTALL_DIR}"
+cp -R "${WORKDIR}/extract"/. "${INSTALL_DIR}/"
+printf "%s" "${VERSION_TAG}" > "${VERSION_FILE}"
+
+mkdir -p /usr/local/bin
+ln -sf "${INSTALL_DIR}/cursor-agent" /usr/local/bin/agent
+ln -sf "${INSTALL_DIR}/cursor-agent" /usr/local/bin/cursor-agent
+
+if ! command -v agent >/dev/null 2>&1; then
+    echo "Cursor Agent installation failed"
+    exit 1
+fi
+
+echo "Cursor Agent installed successfully"
+
+echo "Installing Cursor auth copy hook"
+mkdir -p /usr/local/share
+
+cat << 'EOF' > /usr/local/share/cursor-auth-copy.sh
+#!/bin/sh
+set -e
+
+SOURCE_AUTH="/tmp/cursor-host-tmp/auth.json"
+FLAG_FILE="/usr/local/share/cursor-copyauth.flag"
+TARGET_AUTH="${HOME}/.config/cursor/auth.json"
+
+if [ -f "${FLAG_FILE}" ] && [ -f "${SOURCE_AUTH}" ]; then
+    mkdir -p "$(dirname "${TARGET_AUTH}")"
+    cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
+    chmod 600 "${TARGET_AUTH}"
+fi
+
+EOF
+
+chmod +x /usr/local/share/cursor-auth-copy.sh
+
+if [ "${COPY_AUTH}" = "true" ]; then
+    echo "Enabling Cursor auth copy"
+    : > /usr/local/share/cursor-copyauth.flag
+else
+    rm -f /usr/local/share/cursor-copyauth.flag
+fi
