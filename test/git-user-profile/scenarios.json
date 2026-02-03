@@ -10,5 +10,18 @@
                 "installGit": true
             }
         }
+    },
+    "no_local": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "export-git-config": "sh -c 'git config --file .gitconfig.source user.name \"Host User\" && git config --file .gitconfig.source user.email \"host@example.com\" && git config --file .gitconfig.source user.signingkey \"ABC123\" && git config --file .gitconfig.source commit.gpgsign true && git config -l --file .gitconfig.source --include > .gitconfig.global && git config --file .gitconfig.local.source user.email \"local@example.com\" && git config -l --file .gitconfig.local.source --include > .gitconfig.local && rm -f .gitconfig.source .gitconfig.local.source'"
+        },
+        "features": {
+            "bash": {},
+            "git-user-profile": {
+                "installGit": true,
+                "includeLocal": false
+            }
+        }
     }
 }

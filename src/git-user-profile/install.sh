@@ -7,6 +7,15 @@ GLOBAL_FILE=${GLOBALFILE:-".gitconfig.global"}
 LOCAL_FILE=${LOCALFILE:-".gitconfig.local"}
 INSTALL_GIT=${INSTALLGIT:-"false"}
 
+case "${INCLUDE_LOCAL}" in
+    true|false)
+        ;;
+    *)
+        echo "includeLocal must be 'true' or 'false'"
+        exit 1
+        ;;
+esac
+
 if [ "${INSTALL_GIT}" = "true" ]; then
     if ! command -v apk >/dev/null 2>&1; then
         echo "installGit=true requires apk, but apk was not found."
@@ -48,6 +57,15 @@ INCLUDE_LOCAL=${INCLUDE_LOCAL:-"true"}
 GLOBAL_FILE=${GLOBAL_FILE:-".gitconfig.global"}
 LOCAL_FILE=${LOCAL_FILE:-".gitconfig.local"}
 
+case "${INCLUDE_LOCAL}" in
+    true|false)
+        ;;
+    *)
+        echo "includeLocal must be 'true' or 'false'"
+        exit 1
+        ;;
+esac
+
 should_copy_key() {
     case "${COPY_KEYS}" in
         all)
@@ -64,8 +82,8 @@ should_copy_key() {
         *)
             OLD_IFS="${IFS}"
             IFS=','
-            for key in ${COPY_KEYS}; do
-                if [ "${key}" = "$1" ]; then
+            for KEY in ${COPY_KEYS}; do
+                if [ "${KEY}" = "$1" ]; then
                     IFS="${OLD_IFS}"
                     return 0
                 fi
@@ -85,14 +103,14 @@ apply_config_file() {
     fi
 
     echo "Parsing ${CONFIG_LABEL} git configuration export"
-    while IFS= read -r line; do
-        case "${line}" in
+    while IFS= read -r LINE; do
+        case "${LINE}" in
             *=*)
-                key=${line%%=*}
-                value=${line#*=}
-                if should_copy_key "${key}"; then
-                    echo "Set git config ${key}"
-                    git config --global "${key}" "${value}"
+                KEY=${LINE%%=*}
+                VALUE=${LINE#*=}
+                if should_copy_key "${KEY}"; then
+                    echo "Set git config ${KEY}"
+                    git config --global "${KEY}" "${VALUE}"
                 fi
                 ;;
         esac
