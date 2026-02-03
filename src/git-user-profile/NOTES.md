@@ -1,6 +1,6 @@
 ## Usage notes
 
-- This feature expects `git` to be installed on the host (for `initializeCommand`) and in the container (for the copy hook).
+- This feature expects `git` to be installed on the host (for `initializeCommand`) and in the container (for the copy hook). Set `installGit` to install `git` via `apk` on Wolfi/Alpine.
 - Add an `initializeCommand` to your `devcontainer.json` to export host config in the workspace (commands run in the workspace root):
 
 ```json

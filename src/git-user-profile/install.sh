@@ -5,6 +5,17 @@ COPY_KEYS=${COPYKEYS:-"default"}
 INCLUDE_LOCAL=${INCLUDELOCAL:-"true"}
 GLOBAL_FILE=${GLOBALFILE:-".gitconfig.global"}
 LOCAL_FILE=${LOCALFILE:-".gitconfig.local"}
+INSTALL_GIT=${INSTALLGIT:-"false"}
+
+if [ "${INSTALL_GIT}" = "true" ]; then
+    if ! command -v apk >/dev/null 2>&1; then
+        echo "installGit=true requires apk, but apk was not found."
+        exit 1
+    fi
+    echo "Installing git via apk"
+    apk update
+    apk add --no-cache git
+fi
 
 if ! command -v git >/dev/null 2>&1; then
     echo "git is required but was not found in the container."
@@ -20,6 +31,7 @@ COPY_KEYS="${COPY_KEYS}"
 INCLUDE_LOCAL="${INCLUDE_LOCAL}"
 GLOBAL_FILE="${GLOBAL_FILE}"
 LOCAL_FILE="${LOCAL_FILE}"
+INSTALL_GIT="${INSTALL_GIT}"
 EOF
 
 cat << 'EOF' > /usr/local/share/git-user-profile-copy.sh

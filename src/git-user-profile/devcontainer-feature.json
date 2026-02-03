@@ -28,6 +28,11 @@
             "type": "string",
             "default": ".gitconfig.local",
             "description": "Workspace-relative path to the exported local git config file."
+        },
+        "installGit": {
+            "type": "boolean",
+            "default": false,
+            "description": "Install git using apk (Wolfi/Alpine only)."
         }
     },
     "postAttachCommand": "/usr/local/share/git-user-profile-copy.sh"

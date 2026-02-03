@@ -19,10 +19,11 @@ Copy selected git user profile settings from the host into the container.
 | includeLocal | Also parse the exported local config file after the global file to allow overrides. | boolean | true |
 | globalFile | Workspace-relative path to the exported global git config file. | string | .gitconfig.global |
 | localFile | Workspace-relative path to the exported local git config file. | string | .gitconfig.local |
+| installGit | Install git using apk (Wolfi/Alpine only). | boolean | false |
 
 ## Usage notes
 
-- This feature expects `git` to be installed on the host (for `initializeCommand`) and in the container (for the copy hook).
+- This feature expects `git` to be installed on the host (for `initializeCommand`) and in the container (for the copy hook). Set `installGit` to install `git` via `apk` on Wolfi/Alpine.
 - Add an `initializeCommand` to your `devcontainer.json` to export host config in the workspace (commands run in the workspace root):
 
 ```json
