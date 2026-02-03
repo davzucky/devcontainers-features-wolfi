@@ -1,0 +1,9 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "cursor": {}
+        }
+    }
+}
