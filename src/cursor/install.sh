@@ -4,6 +4,14 @@ set -e
 VERSION=${VERSION:-"latest"}
 COPY_AUTH=${COPYAUTH:-"false"}
 
+# Checks if packages are installed and installs them if not
+install_if_not() {
+    if [ -z "$(apk list -I "$@")" ]; then
+        echo "Install package $@"
+        apk add --no-cache "$@"
+    fi
+}
+
 ARCH=$(uname -m)
 ARCH_SUFFIX=""
 
@@ -26,14 +34,20 @@ if [ "${VERSION}" != "latest" ]; then
 fi
 
 apk update
-apk add --no-cache ca-certificates curl libgcc libstdc++
+install_if_not ca-certificates
+install_if_not curl
+install_if_not libgcc
+install_if_not libstdc++
 
 INSTALL_DIR="/usr/local/lib/cursor-agent"
 VERSION_FILE="${INSTALL_DIR}/VERSION"
 
 if [ -f "${VERSION_FILE}" ]; then
     INSTALLED_VERSION=$(cat "${VERSION_FILE}")
-    if [ "${INSTALLED_VERSION}" = "${VERSION_TAG}" ]; then
+    if [ "${INSTALLED_VERSION}" = "${VERSION_TAG}" ] \
+        && [ -x "${INSTALL_DIR}/cursor-agent" ] \
+        && [ -x "/usr/local/bin/agent" ] \
+        && [ -x "/usr/local/bin/cursor-agent" ]; then
         echo "Cursor Agent already installed (${INSTALLED_VERSION}), skipping"
         exit 0
     fi
@@ -68,6 +82,7 @@ printf "%s" "${VERSION_TAG}" > "${VERSION_FILE}"
 
 mkdir -p /usr/local/bin
 ln -sf "${INSTALL_DIR}/cursor-agent" /usr/local/bin/agent
+ln -sf "${INSTALL_DIR}/cursor-agent" /usr/local/bin/cursor-agent
 
 if ! command -v agent >/dev/null 2>&1; then
     echo "Cursor Agent installation failed"
