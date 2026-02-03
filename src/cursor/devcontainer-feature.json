@@ -9,6 +9,19 @@
             "type": "string",
             "default": "latest",
             "description": "Select the Cursor Agent version to install (for example: 'latest' or '2026.01.28-fd13201')."
+        },
+        "copyAuth": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy Cursor auth.json from the host into the container."
         }
-    }
+    },
+    "mounts": [
+        {
+            "source": "${localEnv:TEMP:/tmp}/cursor",
+            "target": "/tmp/cursor-host-tmp",
+            "type": "bind"
+        }
+    ],
+    "postStartCommand": "/usr/local/share/cursor-auth-copy.sh"
 }

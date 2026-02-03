@@ -2,6 +2,7 @@
 set -e
 
 VERSION=${VERSION:-"latest"}
+COPY_AUTH=${COPYAUTH:-"false"}
 
 ARCH=$(uname -m)
 ARCH_SUFFIX=""
@@ -74,3 +75,31 @@ if ! command -v agent >/dev/null 2>&1; then
 fi
 
 echo "Cursor Agent installed successfully"
+
+echo "Installing Cursor auth copy hook"
+mkdir -p /usr/local/share
+
+cat << 'EOF' > /usr/local/share/cursor-auth-copy.sh
+#!/bin/sh
+set -e
+
+SOURCE_AUTH="/tmp/cursor-host-tmp/auth.json"
+FLAG_FILE="/usr/local/share/cursor-copyauth.flag"
+TARGET_AUTH="${HOME}/.config/cursor/auth.json"
+
+if [ -f "${FLAG_FILE}" ] && [ -f "${SOURCE_AUTH}" ]; then
+    mkdir -p "$(dirname "${TARGET_AUTH}")"
+    cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
+    chmod 600 "${TARGET_AUTH}"
+fi
+
+EOF
+
+chmod +x /usr/local/share/cursor-auth-copy.sh
+
+if [ "${COPY_AUTH}" = "true" ]; then
+    echo "Enabling Cursor auth copy"
+    : > /usr/local/share/cursor-copyauth.flag
+else
+    rm -f /usr/local/share/cursor-copyauth.flag
+fi

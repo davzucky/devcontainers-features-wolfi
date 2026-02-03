@@ -1,9 +1,24 @@
 {
     "default": {
         "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/cursor || true"
+        },
         "features": {
             "bash": {},
             "cursor": {}
+        }
+    },
+    "with_auth": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/cursor || true"
+        },
+        "features": {
+            "bash": {},
+            "cursor": {
+                "copyAuth": true
+            }
         }
     }
 }
