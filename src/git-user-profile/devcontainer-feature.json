@@ -1,0 +1,34 @@
+{
+    "name": "git-user-profile",
+    "id": "git-user-profile",
+    "version": "1.0.0",
+    "description": "Copy selected git user profile settings from the host into the container.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/git-user-profile",
+    "options": {
+        "copyKeys": {
+            "type": "string",
+            "proposals": [
+                "default",
+                "all"
+            ],
+            "default": "default",
+            "description": "Keys to copy from exported git config. Use 'default' (user.name, user.email, user.signingkey, commit.gpgsign), 'all', or a comma-separated list."
+        },
+        "includeLocal": {
+            "type": "boolean",
+            "default": true,
+            "description": "Also parse the exported local config file after the global file to allow overrides."
+        },
+        "globalFile": {
+            "type": "string",
+            "default": ".gitconfig.global",
+            "description": "Workspace-relative path to the exported global git config file."
+        },
+        "localFile": {
+            "type": "string",
+            "default": ".gitconfig.local",
+            "description": "Workspace-relative path to the exported local git config file."
+        }
+    },
+    "postAttachCommand": "/usr/local/share/git-user-profile-copy.sh"
+}

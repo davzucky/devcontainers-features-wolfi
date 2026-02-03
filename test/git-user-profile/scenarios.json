@@ -1,0 +1,12 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "export-git-config": "sh -c 'GIT_CONFIG_GLOBAL=.gitconfig.global git config --global user.name \"Host User\" && GIT_CONFIG_GLOBAL=.gitconfig.global git config --global user.email \"host@example.com\" && GIT_CONFIG_GLOBAL=.gitconfig.global git config --global user.signingkey \"ABC123\" && GIT_CONFIG_GLOBAL=.gitconfig.global git config --global commit.gpgsign true && GIT_CONFIG_GLOBAL=.gitconfig.local git config --global user.email \"local@example.com\"'"
+        },
+        "features": {
+            "bash": {},
+            "git-user-profile": {}
+        }
+    }
+}
