@@ -11,6 +11,31 @@ SOURCE_SOCKET=/var/run/docker-host.sock
 TARGET_SOCKET=/var/run/docker.sock
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
 
+resolve_username() {
+    local candidate
+    local resolved
+
+    candidate="$1"
+    if [ -z "${candidate}" ] || [ "${candidate}" = "auto" ] || [ "${candidate}" = "automatic" ] || [ "${candidate}" = "0" ]; then
+        candidate="root"
+    fi
+
+    if id -u "${candidate}" >/dev/null 2>&1; then
+        echo "${candidate}"
+        return
+    fi
+
+    resolved="$(getent passwd "${candidate}" | cut -d: -f1)"
+    if [ -n "${resolved}" ]; then
+        echo "${resolved}"
+        return
+    fi
+
+    echo "root"
+}
+
+FEATURE_USER="$(resolve_username "${USERNAME}")"
+
 echo "Activating feature 'docker-outside-of-docker'"
 
 apk update
@@ -37,7 +62,7 @@ if [ "${INSTALLBUILDX}" = "true" ]; then
     apk --no-cache add docker-cli-buildx
 fi
 
-if [[ $INSTALLDOCKERCOMPOSE == "true" ]]; then
+if [ "${INSTALLDOCKERCOMPOSE}" = "true" ]; then
     apk --no-cache add docker-compose
 fi
 
@@ -52,20 +77,22 @@ if ! grep -qE '^docker:' /etc/group; then
     groupadd --system docker
 fi
 
-cat /etc/passwd
+echo "Using user '${FEATURE_USER}' for docker-outside-of-docker setup"
 
-usermod -aG docker "${_REMOTE_USER}"
+usermod -aG docker "${FEATURE_USER}"
 
 DOCKER_GID="$(grep -E '^docker:x:[^:]+' /etc/group | cut -d: -f3)"
 
-echo "$_REMOTE_USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$_REMOTE_USER
-chmod 0440 /etc/sudoers.d/$_REMOTE_USER
+if [ "${FEATURE_USER}" != "root" ]; then
+    echo "${FEATURE_USER} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${FEATURE_USER}"
+    chmod 0440 "/etc/sudoers.d/${FEATURE_USER}"
+fi
 
 mkdir -p "$(dirname "${SOURCE_SOCKET}")"
 touch "${SOURCE_SOCKET}"
 ln -s "${SOURCE_SOCKET}" "${TARGET_SOCKET}"
 
-chown -h "${_REMOTE_USER}":root "${TARGET_SOCKET}"
+chown -h "${FEATURE_USER}":root "${TARGET_SOCKET}"
 
 ## Setup entrypoint script
 mkdir -p /usr/local/share
@@ -132,7 +159,7 @@ exec "\$@"
 EOF
 
 chmod +x /usr/local/share/docker-init.sh
-chown ${_REMOTE_USER}:root /usr/local/share/docker-init.sh
+chown "${FEATURE_USER}":root /usr/local/share/docker-init.sh
 
 
 echo 'Done!'
