@@ -18,7 +18,7 @@ if [ -z "${TARGET_HOME}" ]; then
     TARGET_HOME="/root"
 fi
 
-TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
-check "auth file missing" test ! -f "${TARGET_AUTH}"
+TARGET_PROFILE_DIR="${TARGET_HOME}/.local/share/opencode"
+check "profile symlink missing" test ! -L "${TARGET_PROFILE_DIR}"
 
 reportResults

@@ -26,9 +26,7 @@ apk add --no-cache ca-certificates curl libarchive-tools
 OPENCODE_INSTALLED="false"
 if command -v opencode >/dev/null 2>&1; then
     if [ "${VERSION}" = "latest" ]; then
-        echo "opencode already installed, running upgrade"
-        opencode upgrade
-        echo "opencode upgrade complete"
+        echo "opencode already installed, skipping"
         OPENCODE_INSTALLED="true"
     else
         CURRENT_VERSION=$(opencode --version 2>/dev/null | awk '{print $NF}')
@@ -81,21 +79,36 @@ if ! command -v opencode >/dev/null 2>&1; then
     exit 1
 fi
 
-echo "Installing opencode auth copy hook"
+echo "Installing opencode persistence hook"
 mkdir -p /usr/local/share
 
 cat << 'EOF' > /usr/local/share/opencode-auth-copy.sh
 #!/bin/sh
 set -e
 
-SOURCE_AUTH="/tmp/opencode-host-tmp/auth.json"
+SOURCE_DIR="/tmp/opencode-host-tmp"
 FLAG_FILE="/usr/local/share/opencode-copyauth.flag"
-TARGET_AUTH="${HOME}/.local/share/opencode/auth.json"
+TARGET_DIR="${HOME}/.local/share/opencode"
 
-if [ -f "${FLAG_FILE}" ] && [ -f "${SOURCE_AUTH}" ]; then
-    mkdir -p "$(dirname "${TARGET_AUTH}")"
-    cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
-    chmod 600 "${TARGET_AUTH}"
+if [ -f "${FLAG_FILE}" ]; then
+    mkdir -p "${SOURCE_DIR}"
+    mkdir -p "$(dirname "${TARGET_DIR}")"
+
+    if [ -L "${TARGET_DIR}" ]; then
+        CURRENT_LINK=$(readlink "${TARGET_DIR}" || true)
+        if [ "${CURRENT_LINK}" != "${SOURCE_DIR}" ]; then
+            rm "${TARGET_DIR}"
+            ln -s "${SOURCE_DIR}" "${TARGET_DIR}"
+        fi
+    elif [ -e "${TARGET_DIR}" ]; then
+        if [ -d "${TARGET_DIR}" ]; then
+            cp -R "${TARGET_DIR}/." "${SOURCE_DIR}/" 2>/dev/null || true
+        fi
+        rm -rf "${TARGET_DIR}"
+        ln -s "${SOURCE_DIR}" "${TARGET_DIR}"
+    else
+        ln -s "${SOURCE_DIR}" "${TARGET_DIR}"
+    fi
 fi
 
 EOF

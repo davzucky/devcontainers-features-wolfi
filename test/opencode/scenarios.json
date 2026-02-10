@@ -12,7 +12,7 @@
     "with_auth": {
         "image": "chainguard/wolfi-base:latest",
         "initializeCommand": {
-            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/opencode || true"
+            "prepare-posix": "mkdir -p ${TEMP:-/tmp}/opencode && printf '{\"token\":\"test\"}' > ${TEMP:-/tmp}/opencode/auth.json || true"
         },
         "features": {
             "bash": {},
