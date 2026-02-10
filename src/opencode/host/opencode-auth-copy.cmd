@@ -14,8 +14,7 @@ if not "%OPENCODE_CONFIG_DIR%"=="" (
 
 if exist "%SOURCE_DIR%\" (
     if exist "%TARGET_DIR%" (
-        rmdir "%TARGET_DIR%" >nul 2>&1
-        if exist "%TARGET_DIR%" del /F /Q "%TARGET_DIR%" >nul 2>&1
+        rmdir /S /Q "%TARGET_DIR%" >nul 2>&1
     )
 
     mklink /J "%TARGET_DIR%" "%SOURCE_DIR%" >nul 2>&1
@@ -24,8 +23,7 @@ if exist "%SOURCE_DIR%\" (
     )
 ) else (
     if exist "%TARGET_DIR%" (
-        rmdir "%TARGET_DIR%" >nul 2>&1
-        if exist "%TARGET_DIR%" del /F /Q "%TARGET_DIR%" >nul 2>&1
+        rmdir /S /Q "%TARGET_DIR%" >nul 2>&1
     )
     if not exist "%TARGET_DIR%" mkdir "%TARGET_DIR%"
 )

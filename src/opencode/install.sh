@@ -23,6 +23,11 @@ esac
 apk update
 apk add --no-cache ca-certificates curl libarchive-tools
 
+if ! command -v rg >/dev/null 2>&1; then
+    echo "Installing ripgrep"
+    apk add --no-cache ripgrep
+fi
+
 OPENCODE_INSTALLED="false"
 if command -v opencode >/dev/null 2>&1; then
     if [ "${VERSION}" = "latest" ]; then
@@ -102,7 +107,10 @@ if [ -f "${FLAG_FILE}" ]; then
         fi
     elif [ -e "${TARGET_DIR}" ]; then
         if [ -d "${TARGET_DIR}" ]; then
-            cp -R "${TARGET_DIR}/." "${SOURCE_DIR}/" 2>/dev/null || true
+            if ! cp -R "${TARGET_DIR}/." "${SOURCE_DIR}/"; then
+                echo "Warning: failed to migrate existing profile data from ${TARGET_DIR} to ${SOURCE_DIR}; keeping existing directory"
+                exit 0
+            fi
         fi
         rm -rf "${TARGET_DIR}"
         ln -s "${SOURCE_DIR}" "${TARGET_DIR}"
