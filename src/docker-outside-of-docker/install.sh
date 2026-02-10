@@ -12,24 +12,45 @@ TARGET_SOCKET=/var/run/docker.sock
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
 
 resolve_username() {
-    local candidate
-    local resolved
+    CANDIDATE="$1"
+    RESOLVED=""
 
-    candidate="$1"
-    if [ -z "${candidate}" ] || [ "${candidate}" = "auto" ] || [ "${candidate}" = "automatic" ] || [ "${candidate}" = "0" ]; then
-        candidate="root"
+    if [ -z "${CANDIDATE}" ] || [ "${CANDIDATE}" = "auto" ] || [ "${CANDIDATE}" = "automatic" ] || [ "${CANDIDATE}" = "0" ]; then
+        CANDIDATE="root"
     fi
 
-    if id -u "${candidate}" >/dev/null 2>&1; then
-        echo "${candidate}"
+    case "${CANDIDATE}" in
+        ''|*[!0-9]*)
+            ;;
+        *)
+            RESOLVED="$(getent passwd "${CANDIDATE}" | cut -d: -f1)"
+            case "${RESOLVED}" in
+                ''|*[!0-9]*)
+                    if [ -n "${RESOLVED}" ]; then
+                        echo "${RESOLVED}"
+                        return
+                    fi
+                    ;;
+            esac
+            echo "root"
+            return
+            ;;
+    esac
+
+    if id -u "${CANDIDATE}" >/dev/null 2>&1; then
+        echo "${CANDIDATE}"
         return
     fi
 
-    resolved="$(getent passwd "${candidate}" | cut -d: -f1)"
-    if [ -n "${resolved}" ]; then
-        echo "${resolved}"
-        return
-    fi
+    RESOLVED="$(getent passwd "${CANDIDATE}" | cut -d: -f1)"
+    case "${RESOLVED}" in
+        ''|*[!0-9]*)
+            if [ -n "${RESOLVED}" ]; then
+                echo "${RESOLVED}"
+                return
+            fi
+            ;;
+    esac
 
     echo "root"
 }
