@@ -16,7 +16,7 @@ Installs opencode CLI on Wolfi base images.
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
 | version | Select the opencode CLI version to install. | string | latest |
-| copyAuth | Whether to copy opencode auth.json from the host into the container. | boolean | false |
+| copyAuth | Whether to persist host opencode profile data in the container via a shared temp mount and symlink. | boolean | false |
 
 ## Usage notes
 
