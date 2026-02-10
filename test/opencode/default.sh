@@ -5,6 +5,7 @@ set -e
 source dev-container-features-test-lib
 
 check "opencode installed" opencode --version
+check "ripgrep installed" rg --version
 check "auth copy flag missing" test ! -f /usr/local/share/opencode-copyauth.flag
 
 TARGET_HOME="${HOME}"
@@ -18,7 +19,7 @@ if [ -z "${TARGET_HOME}" ]; then
     TARGET_HOME="/root"
 fi
 
-TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
-check "auth file missing" test ! -f "${TARGET_AUTH}"
+TARGET_PROFILE_DIR="${TARGET_HOME}/.local/share/opencode"
+check "profile symlink missing" test ! -L "${TARGET_PROFILE_DIR}"
 
 reportResults
