@@ -15,18 +15,16 @@ if [ -z "${TARGET_HOME}" ]; then
     TARGET_HOME="/root"
 fi
 
-TARGET_PROFILE_DIR="${TARGET_HOME}/.local/share/opencode"
-SOURCE_PROFILE_DIR="/tmp/opencode-host-tmp"
+TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
+SOURCE_AUTH="/tmp/opencode-host-tmp/auth.json"
 
 check "auth copy hook installed" test -f /usr/local/share/opencode-auth-copy.sh
 check "auth copy flag installed" test -f /usr/local/share/opencode-copyauth.flag
-check "profile symlink enabled" test -L "${TARGET_PROFILE_DIR}"
-check "profile symlink target" test "$(readlink "${TARGET_PROFILE_DIR}")" = "${SOURCE_PROFILE_DIR}"
 
-if [ -f "${SOURCE_PROFILE_DIR}/auth.json" ]; then
-    check "auth visible" test -f "${TARGET_PROFILE_DIR}/auth.json"
+if [ -f "${SOURCE_AUTH}" ]; then
+    check "auth copied" test -f "${TARGET_AUTH}"
 else
-    check "auth absent" test ! -f "${TARGET_PROFILE_DIR}/auth.json"
+    check "auth missing on host" test ! -f "${TARGET_AUTH}"
 fi
 
 reportResults
