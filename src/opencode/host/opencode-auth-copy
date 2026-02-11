@@ -2,7 +2,19 @@
 set -e
 
 TEMP_DIR=${TEMP:-"/tmp"}
+
+while [ "${TEMP_DIR}" != "/" ] && [ "${TEMP_DIR%/}" != "${TEMP_DIR}" ]; do
+    TEMP_DIR=${TEMP_DIR%/}
+done
+
 TARGET_DIR="${TEMP_DIR}/opencode"
+
+case "${TARGET_DIR}" in
+    ""|"/"|"."|"..")
+        echo "Refusing unsafe target path: ${TARGET_DIR}"
+        exit 1
+        ;;
+esac
 
 if [ -n "${OPENCODE_CONFIG_DIR:-}" ]; then
     SOURCE_DIR="${OPENCODE_CONFIG_DIR}"
@@ -10,15 +22,17 @@ else
     SOURCE_DIR="${HOME}/.local/share/opencode"
 fi
 
+if [ -L "${TARGET_DIR}" ]; then
+    CURRENT_LINK=$(readlink "${TARGET_DIR}" || true)
+    if [ "${CURRENT_LINK}" = "${SOURCE_DIR}" ]; then
+        exit 0
+    fi
+
+    rm "${TARGET_DIR}"
+fi
+
 if [ -d "${SOURCE_DIR}" ]; then
     mkdir -p "$(dirname "${TARGET_DIR}")"
-
-    if [ -L "${TARGET_DIR}" ]; then
-        CURRENT_LINK=$(readlink "${TARGET_DIR}" || true)
-        if [ "${CURRENT_LINK}" = "${SOURCE_DIR}" ]; then
-            exit 0
-        fi
-    fi
 
     if [ -e "${TARGET_DIR}" ]; then
         rm -rf "${TARGET_DIR}"

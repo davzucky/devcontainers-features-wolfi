@@ -4,7 +4,42 @@ setlocal
 set "TEMP_DIR=%TEMP%"
 if "%TEMP_DIR%"=="" set "TEMP_DIR=/tmp"
 
+:trim_temp_dir
+if "%TEMP_DIR:~-1%"=="\" (
+    if /I not "%TEMP_DIR:~1,2%"==":\" (
+        set "TEMP_DIR=%TEMP_DIR:~0,-1%"
+        goto trim_temp_dir
+    )
+)
+if "%TEMP_DIR:~-1%"=="/" (
+    if /I not "%TEMP_DIR:~1,2%"==":/" (
+        set "TEMP_DIR=%TEMP_DIR:~0,-1%"
+        goto trim_temp_dir
+    )
+)
+
 set "TARGET_DIR=%TEMP_DIR%\opencode"
+
+if "%TARGET_DIR%"=="" (
+    echo Refusing unsafe target path: %TARGET_DIR%
+    exit /b 1
+)
+if "%TARGET_DIR%"=="\" (
+    echo Refusing unsafe target path: %TARGET_DIR%
+    exit /b 1
+)
+if "%TARGET_DIR%"=="/" (
+    echo Refusing unsafe target path: %TARGET_DIR%
+    exit /b 1
+)
+if "%TARGET_DIR%"=="." (
+    echo Refusing unsafe target path: %TARGET_DIR%
+    exit /b 1
+)
+if "%TARGET_DIR%"==".." (
+    echo Refusing unsafe target path: %TARGET_DIR%
+    exit /b 1
+)
 
 if not "%OPENCODE_CONFIG_DIR%"=="" (
     set "SOURCE_DIR=%OPENCODE_CONFIG_DIR%"
