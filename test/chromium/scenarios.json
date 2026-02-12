@@ -1,0 +1,18 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "chromium": {}
+        }
+    },
+    "version_144_0_7559_109_r2": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "chromium": {
+                "version": "144.0.7559.109-r2"
+            }
+        }
+    }
+}

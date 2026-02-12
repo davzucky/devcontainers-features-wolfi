@@ -32,6 +32,7 @@ jobs:
       matrix:
         features:
           - bash
+          - chromium
           - docker-outside-of-docker
           - claude
           - cursor

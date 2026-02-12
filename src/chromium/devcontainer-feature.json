@@ -1,0 +1,14 @@
+{
+    "name": "chromium",
+    "id": "chromium",
+    "version": "1.0.0",
+    "description": "Installs Chromium browser on Wolfi base images.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/chromium",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "Version of chromium to install (use 'latest' or a specific apk version)."
+        }
+    }
+}
