@@ -74,7 +74,7 @@ fi
 
 if [ "${UPGRADE_PACKAGES}" = "true" ]; then
     echo "Upgrading apk packages..."
-    apk upgrade
+    apk upgrade --no-cache
 fi
 
 echo "Resolving target user..."
