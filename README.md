@@ -9,6 +9,7 @@ Most of the features available for devcontainers usually expect you to run a deb
 The following features are available:
 
 - [bash](./src/bash/README.md) - Installs bash and common shell utilities on Wolfi base images
+- [chromium](./src/chromium/README.md) - Installs Chromium browser on Wolfi base images
 - [docker-outside-of-docker](./src/docker-outside-of-docker/README.md) - Enables Docker-in-Docker functionality for development containers
 - [node](./src/node/README.md) - Installs Node.js and common Node.js utilities on Wolfi base images
 - [opencode](./src/opencode/README.md) - Installs opencode CLI on Wolfi base images
