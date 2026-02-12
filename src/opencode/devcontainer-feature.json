@@ -1,7 +1,7 @@
 {
     "name": "opencode",
     "id": "opencode",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "description": "Installs opencode CLI on Wolfi base images.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/opencode",
     "options": {
@@ -13,7 +13,7 @@
         "copyAuth": {
             "type": "boolean",
             "default": false,
-            "description": "Whether to persist host opencode profile data in the container via a shared temp mount and symlink."
+            "description": "Whether to copy opencode auth.json from the host into the container."
         }
     },
     "mounts": [
