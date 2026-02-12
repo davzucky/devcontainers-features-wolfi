@@ -10,6 +10,7 @@ The following features are available:
 
 - [bash](./src/bash/README.md) - Installs bash and common shell utilities on Wolfi base images
 - [chromium](./src/chromium/README.md) - Installs Chromium browser on Wolfi base images
+- [common-utils](./src/common-utils/README.md) - Installs common command line utilities, configures users, and optionally sets up Zsh on Wolfi base images (lean Wolfi-native variant)
 - [docker-outside-of-docker](./src/docker-outside-of-docker/README.md) - Enables Docker-in-Docker functionality for development containers
 - [node](./src/node/README.md) - Installs Node.js and common Node.js utilities on Wolfi base images
 - [opencode](./src/opencode/README.md) - Installs opencode CLI on Wolfi base images

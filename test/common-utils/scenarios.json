@@ -1,0 +1,56 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "common-utils": {
+                "upgradePackages": false
+            }
+        }
+    },
+    "no_zsh": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "common-utils": {
+                "installZsh": false,
+                "installOhMyZsh": false,
+                "upgradePackages": false
+            }
+        }
+    },
+    "zsh_default_shell": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "common-utils": {
+                "configureZshAsDefaultShell": true,
+                "upgradePackages": false
+            }
+        }
+    },
+    "custom_user": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "common-utils": {
+                "username": "testuser",
+                "userUid": "2001",
+                "userGid": "2001",
+                "upgradePackages": false
+            }
+        }
+    },
+    "root_user": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "common-utils": {
+                "username": "none",
+                "installOhMyZsh": false,
+                "upgradePackages": false
+            }
+        },
+        "remoteUser": "root"
+    }
+}

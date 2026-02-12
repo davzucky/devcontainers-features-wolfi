@@ -33,6 +33,7 @@ jobs:
         features:
           - bash
           - chromium
+          - common-utils
           - docker-outside-of-docker
           - claude
           - cursor
