@@ -155,7 +155,17 @@ else
     fi
 fi
 
-if [ "${INSTALL_ZSH}" = "true" ] && [ "${CONFIGURE_ZSH_AS_DEFAULT_SHELL}" = "true" ]; then
+if [ "${INSTALL_ZSH}" != "true" ] && [ "${CONFIGURE_ZSH_AS_DEFAULT_SHELL}" = "true" ]; then
+    echo "configureZshAsDefaultShell requires installZsh=true."
+    exit 1
+fi
+
+if [ "${INSTALL_ZSH}" != "true" ] && [ "${INSTALL_OH_MY_ZSH}" = "true" ]; then
+    echo "installOhMyZsh requires installZsh=true."
+    exit 1
+fi
+
+if [ "${CONFIGURE_ZSH_AS_DEFAULT_SHELL}" = "true" ]; then
     ZSH_PATH="$(command -v zsh)"
     if [ "${ZSH_PATH}" = "" ]; then
         echo "zsh was requested as default shell but is not installed."
@@ -166,11 +176,6 @@ if [ "${INSTALL_ZSH}" = "true" ] && [ "${CONFIGURE_ZSH_AS_DEFAULT_SHELL}" = "tru
 fi
 
 if [ "${INSTALL_OH_MY_ZSH}" = "true" ]; then
-    if [ "${INSTALL_ZSH}" != "true" ]; then
-        echo "installOhMyZsh requires installZsh=true."
-        exit 1
-    fi
-
     echo "Installing Oh My Zsh for ${USERNAME}..."
     OH_MY_ZSH_DIR="${USER_HOME}/.oh-my-zsh"
     if [ ! -d "${OH_MY_ZSH_DIR}" ]; then
