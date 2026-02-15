@@ -38,6 +38,7 @@ jobs:
           - claude
           - cursor
           - git-user-profile
+          - gh
           - glab
           - node
           - opencode

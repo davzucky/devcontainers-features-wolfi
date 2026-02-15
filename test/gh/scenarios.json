@@ -1,0 +1,36 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/gh || true"
+        },
+        "features": {
+            "bash": {},
+            "gh": {}
+        }
+    },
+    "with_config": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/gh || true"
+        },
+        "features": {
+            "bash": {},
+            "gh": {
+                "copyConfig": true
+            }
+        }
+    },
+    "with_git_auth": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/gh || true"
+        },
+        "features": {
+            "bash": {},
+            "gh": {
+                "useGitAuth": true
+            }
+        }
+    }
+}
