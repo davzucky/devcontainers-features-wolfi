@@ -1,7 +1,7 @@
 {
     "name": "common-utils",
     "id": "common-utils",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Installs common command line utilities, configures a non-root user, and optionally sets up Zsh on Wolfi base images.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/common-utils",
     "options": {
