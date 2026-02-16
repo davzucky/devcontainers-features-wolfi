@@ -33,11 +33,40 @@ set -e
 SOURCE_CONFIG="/tmp/glab-host-tmp/config.yml"
 FLAG_FILE="/usr/local/share/glab-copyconfig.flag"
 AUTH_FLAG_FILE="/usr/local/share/glab-git-auth.flag"
-TARGET_CONFIG="${HOME}/.config/glab-cli/config.yml"
+TARGET_USER="${_REMOTE_USER:-}"
+TARGET_HOME=""
+
+if [ -n "${_REMOTE_USER_HOME:-}" ]; then
+    TARGET_HOME="${_REMOTE_USER_HOME}"
+elif [ -n "${TARGET_USER}" ] && id -u "${TARGET_USER}" >/dev/null 2>&1; then
+    TARGET_HOME=$(awk -F: -v user="${TARGET_USER}" '$1==user{print $6}' /etc/passwd)
+fi
+
+if [ -z "${TARGET_HOME}" ]; then
+    TARGET_HOME="${HOME}"
+fi
+
+if [ -z "${TARGET_USER}" ] && [ -n "${TARGET_HOME}" ]; then
+    TARGET_USER=$(awk -F: -v home="${TARGET_HOME}" '$6==home{print $1; exit}' /etc/passwd)
+fi
+
+TARGET_CONFIG="${TARGET_HOME}/.config/glab-cli/config.yml"
 
 if [ -f "${FLAG_FILE}" ] && [ -f "${SOURCE_CONFIG}" ]; then
-    mkdir -p "$(dirname "${TARGET_CONFIG}")"
+    TARGET_DIR=$(dirname "${TARGET_CONFIG}")
+    mkdir -p "${TARGET_DIR}"
     cp "${SOURCE_CONFIG}" "${TARGET_CONFIG}"
+
+    if [ -n "${TARGET_USER}" ] && id -u "${TARGET_USER}" >/dev/null 2>&1; then
+        TARGET_GROUP=$(id -gn "${TARGET_USER}" 2>/dev/null || true)
+        if [ -n "${TARGET_GROUP}" ]; then
+            chown "${TARGET_USER}:${TARGET_GROUP}" "${TARGET_DIR}" "${TARGET_CONFIG}"
+        else
+            chown "${TARGET_USER}" "${TARGET_DIR}" "${TARGET_CONFIG}"
+        fi
+    fi
+
+    chmod 700 "${TARGET_DIR}"
     chmod 600 "${TARGET_CONFIG}"
 fi
 

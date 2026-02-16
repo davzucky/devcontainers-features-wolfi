@@ -1,7 +1,7 @@
 {
     "name": "glab",
     "id": "glab",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Installs glab CLI on Wolfi base images.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/glab",
     "options": {

@@ -93,11 +93,40 @@ set -e
 
 SOURCE_AUTH="/tmp/opencode-host-tmp/auth.json"
 FLAG_FILE="/usr/local/share/opencode-copyauth.flag"
-TARGET_AUTH="${HOME}/.local/share/opencode/auth.json"
+TARGET_USER="${_REMOTE_USER:-}"
+TARGET_HOME=""
+
+if [ -n "${_REMOTE_USER_HOME:-}" ]; then
+    TARGET_HOME="${_REMOTE_USER_HOME}"
+elif [ -n "${TARGET_USER}" ] && id -u "${TARGET_USER}" >/dev/null 2>&1; then
+    TARGET_HOME=$(awk -F: -v user="${TARGET_USER}" '$1==user{print $6}' /etc/passwd)
+fi
+
+if [ -z "${TARGET_HOME}" ]; then
+    TARGET_HOME="${HOME}"
+fi
+
+if [ -z "${TARGET_USER}" ] && [ -n "${TARGET_HOME}" ]; then
+    TARGET_USER=$(awk -F: -v home="${TARGET_HOME}" '$6==home{print $1; exit}' /etc/passwd)
+fi
+
+TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
 
 if [ -f "${FLAG_FILE}" ] && [ -f "${SOURCE_AUTH}" ]; then
-    mkdir -p "$(dirname "${TARGET_AUTH}")"
+    TARGET_DIR=$(dirname "${TARGET_AUTH}")
+    mkdir -p "${TARGET_DIR}"
     cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
+
+    if [ -n "${TARGET_USER}" ] && id -u "${TARGET_USER}" >/dev/null 2>&1; then
+        TARGET_GROUP=$(id -gn "${TARGET_USER}" 2>/dev/null || true)
+        if [ -n "${TARGET_GROUP}" ]; then
+            chown "${TARGET_USER}:${TARGET_GROUP}" "${TARGET_DIR}" "${TARGET_AUTH}"
+        else
+            chown "${TARGET_USER}" "${TARGET_DIR}" "${TARGET_AUTH}"
+        fi
+    fi
+
+    chmod 700 "${TARGET_DIR}"
     chmod 600 "${TARGET_AUTH}"
 fi
 
@@ -108,6 +137,8 @@ chmod +x /usr/local/share/opencode-auth-copy.sh
 if [ "${COPY_AUTH}" = "true" ]; then
     echo "Enabling opencode auth copy"
     : > /usr/local/share/opencode-copyauth.flag
+else
+    rm -f /usr/local/share/opencode-copyauth.flag
 fi
 
 echo "opencode installed successfully"
