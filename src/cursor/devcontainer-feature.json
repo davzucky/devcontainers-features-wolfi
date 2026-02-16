@@ -1,7 +1,7 @@
 {
     "name": "cursor",
     "id": "cursor",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Installs Cursor Agent CLI on Wolfi base images.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/cursor",
     "options": {
