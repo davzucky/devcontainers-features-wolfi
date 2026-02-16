@@ -136,6 +136,14 @@ else
 fi
 
 if [ "${USERNAME}" != "root" ]; then
+    if ! awk -F: '$1=="sudo" { found=1 } END { exit(found ? 0 : 1) }' /etc/group; then
+        echo "Creating sudo group..."
+        groupadd sudo
+    fi
+
+    echo "Adding ${USERNAME} to sudo group..."
+    usermod -aG sudo "${USERNAME}"
+
     echo "Configuring passwordless sudo for ${USERNAME}..."
     mkdir -p /etc/sudoers.d
     echo "${USERNAME} ALL=(root) NOPASSWD:ALL" > "/etc/sudoers.d/${USERNAME}"
