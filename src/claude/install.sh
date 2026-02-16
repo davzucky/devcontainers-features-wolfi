@@ -116,6 +116,14 @@ if [ -z "${TARGET_HOME}" ]; then
     TARGET_HOME="${HOME}"
 fi
 
+if [ -z "${TARGET_USER}" ] || [ -z "${TARGET_HOME}" ] || [ "${TARGET_HOME}" = "/root" ]; then
+    FALLBACK_USER=$(awk -F: '$3>=1000 && $1!="nobody" {print $1; exit}' /etc/passwd)
+    if [ -n "${FALLBACK_USER}" ] && id -u "${FALLBACK_USER}" >/dev/null 2>&1; then
+        TARGET_USER="${FALLBACK_USER}"
+        TARGET_HOME=$(awk -F: -v user="${TARGET_USER}" '$1==user{print $6}' /etc/passwd)
+    fi
+fi
+
 if [ -z "${TARGET_USER}" ] && [ -n "${TARGET_HOME}" ]; then
     TARGET_USER=$(awk -F: -v home="${TARGET_HOME}" '$6==home{print $1; exit}' /etc/passwd)
 fi
