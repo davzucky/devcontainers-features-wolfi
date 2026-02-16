@@ -4,25 +4,32 @@ set -e
 
 source dev-container-features-test-lib
 
-TARGET_HOME="${HOME}"
-if [ -z "${TARGET_HOME}" ]; then
+TARGET_USER="${_REMOTE_USER:-}"
+TARGET_HOME=""
+
+if [ -n "${_REMOTE_USER_HOME:-}" ]; then
     TARGET_HOME="${_REMOTE_USER_HOME}"
-fi
-if [ -z "${TARGET_HOME}" ]; then
-    TARGET_HOME=$(grep -E "^${_REMOTE_USER}:" /etc/passwd | cut -d: -f6)
-fi
-if [ -z "${TARGET_HOME}" ]; then
-    TARGET_HOME="/root"
+elif [ -n "${TARGET_USER}" ]; then
+    TARGET_HOME=$(awk -F: -v user="${TARGET_USER}" '$1==user{print $6}' /etc/passwd)
 fi
 
-if [ "${TARGET_HOME}" = "/root" ]; then
+if [ -z "${TARGET_HOME}" ]; then
+    TARGET_HOME="${HOME:-}"
+fi
+
+if [ -z "${TARGET_USER}" ] || [ -z "${TARGET_HOME}" ] || [ "${TARGET_HOME}" = "/root" ]; then
     FALLBACK_USER=$(awk -F: '$3>=1000 && $1!="nobody" {print $1; exit}' /etc/passwd)
     if [ -n "${FALLBACK_USER}" ]; then
+        TARGET_USER="${FALLBACK_USER}"
         FALLBACK_HOME=$(awk -F: -v user="${FALLBACK_USER}" '$1==user{print $6}' /etc/passwd)
         if [ -n "${FALLBACK_HOME}" ]; then
             TARGET_HOME="${FALLBACK_HOME}"
         fi
     fi
+fi
+
+if [ -z "${TARGET_HOME}" ]; then
+    TARGET_HOME="/root"
 fi
 
 TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
