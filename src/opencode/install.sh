@@ -137,6 +137,8 @@ chmod +x /usr/local/share/opencode-auth-copy.sh
 if [ "${COPY_AUTH}" = "true" ]; then
     echo "Enabling opencode auth copy"
     : > /usr/local/share/opencode-copyauth.flag
+else
+    rm -f /usr/local/share/opencode-copyauth.flag
 fi
 
 echo "opencode installed successfully"
