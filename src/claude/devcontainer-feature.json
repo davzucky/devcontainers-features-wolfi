@@ -1,7 +1,7 @@
 {
     "name": "claude",
     "id": "claude",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Installs Claude Code CLI on Wolfi base images.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/claude",
     "options": {
