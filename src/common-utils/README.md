@@ -16,7 +16,7 @@ Installs common command line utilities, configures a non-root user, and optional
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
 | installZsh | Install zsh shell. | boolean | true |
-| configureZshAsDefaultShell | Set zsh as the default shell for the configured user. | boolean | false |
+| configureZshAsDefaultShell | Set zsh as the default shell for the configured user. | boolean | true |
 | installOhMyZsh | Install Oh My Zsh for the configured user. | boolean | true |
 | installOhMyZshConfig | Create a default .zshrc when installing Oh My Zsh. | boolean | true |
 | upgradePackages | Upgrade existing apk packages. | boolean | true |
