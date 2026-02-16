@@ -1,7 +1,7 @@
 {
     "name": "gh",
     "id": "gh",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Installs GitHub CLI (gh) on Wolfi base images.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/gh",
     "options": {

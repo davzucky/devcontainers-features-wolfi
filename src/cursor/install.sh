@@ -94,55 +94,62 @@ echo "Cursor Agent installed successfully"
 echo "Installing Cursor auth copy hook"
 mkdir -p /usr/local/share
 
-cat << 'EOF' > /usr/local/share/cursor-auth-copy.sh
+RESOLVED_TARGET_USER="${_REMOTE_USER:-}"
+RESOLVED_TARGET_HOME=""
+
+if [ -n "${_REMOTE_USER_HOME:-}" ]; then
+    RESOLVED_TARGET_HOME="${_REMOTE_USER_HOME}"
+elif [ -n "${RESOLVED_TARGET_USER}" ] && id -u "${RESOLVED_TARGET_USER}" >/dev/null 2>&1; then
+    RESOLVED_TARGET_HOME=$(awk -F: -v user="${RESOLVED_TARGET_USER}" '$1==user{print $6}' /etc/passwd)
+fi
+
+if [ -z "${RESOLVED_TARGET_HOME}" ]; then
+    RESOLVED_TARGET_HOME="${HOME}"
+fi
+
+if [ -z "${RESOLVED_TARGET_USER}" ] || [ -z "${RESOLVED_TARGET_HOME}" ] || [ "${RESOLVED_TARGET_HOME}" = "/root" ]; then
+    FALLBACK_USER=$(awk -F: '$3>=1000 && $1!="nobody" {print $1; exit}' /etc/passwd)
+    if [ -n "${FALLBACK_USER}" ] && id -u "${FALLBACK_USER}" >/dev/null 2>&1; then
+        RESOLVED_TARGET_USER="${FALLBACK_USER}"
+        RESOLVED_TARGET_HOME=$(awk -F: -v user="${RESOLVED_TARGET_USER}" '$1==user{print $6}' /etc/passwd)
+    fi
+fi
+
+if [ -z "${RESOLVED_TARGET_USER}" ] && [ -n "${RESOLVED_TARGET_HOME}" ]; then
+    RESOLVED_TARGET_USER=$(awk -F: -v home="${RESOLVED_TARGET_HOME}" '$6==home{print $1; exit}' /etc/passwd)
+fi
+
+if [ -z "${RESOLVED_TARGET_HOME}" ]; then
+    RESOLVED_TARGET_HOME="/root"
+fi
+
+cat << EOF > /usr/local/share/cursor-auth-copy.sh
 #!/bin/sh
 set -e
 
 SOURCE_AUTH="/tmp/cursor-host-tmp/auth.json"
 FLAG_FILE="/usr/local/share/cursor-copyauth.flag"
-TARGET_USER="${_REMOTE_USER:-}"
-TARGET_HOME=""
+TARGET_USER="${RESOLVED_TARGET_USER}"
+TARGET_HOME="${RESOLVED_TARGET_HOME}"
 
-if [ -n "${_REMOTE_USER_HOME:-}" ]; then
-    TARGET_HOME="${_REMOTE_USER_HOME}"
-elif [ -n "${TARGET_USER}" ] && id -u "${TARGET_USER}" >/dev/null 2>&1; then
-    TARGET_HOME=$(awk -F: -v user="${TARGET_USER}" '$1==user{print $6}' /etc/passwd)
-fi
+TARGET_AUTH="\${TARGET_HOME}/.config/cursor/auth.json"
 
-if [ -z "${TARGET_HOME}" ]; then
-    TARGET_HOME="${HOME}"
-fi
+if [ -f "\${FLAG_FILE}" ] && [ -f "\${SOURCE_AUTH}" ]; then
+    TARGET_DIR=\$(dirname "\${TARGET_AUTH}")
+    mkdir -p "\${TARGET_DIR}"
+    cp "\${SOURCE_AUTH}" "\${TARGET_AUTH}"
 
-if [ -z "${TARGET_USER}" ] || [ -z "${TARGET_HOME}" ] || [ "${TARGET_HOME}" = "/root" ]; then
-    FALLBACK_USER=$(awk -F: '$3>=1000 && $1!="nobody" {print $1; exit}' /etc/passwd)
-    if [ -n "${FALLBACK_USER}" ] && id -u "${FALLBACK_USER}" >/dev/null 2>&1; then
-        TARGET_USER="${FALLBACK_USER}"
-        TARGET_HOME=$(awk -F: -v user="${TARGET_USER}" '$1==user{print $6}' /etc/passwd)
-    fi
-fi
-
-if [ -z "${TARGET_USER}" ] && [ -n "${TARGET_HOME}" ]; then
-    TARGET_USER=$(awk -F: -v home="${TARGET_HOME}" '$6==home{print $1; exit}' /etc/passwd)
-fi
-
-TARGET_AUTH="${TARGET_HOME}/.config/cursor/auth.json"
-
-if [ -f "${FLAG_FILE}" ] && [ -f "${SOURCE_AUTH}" ]; then
-    TARGET_DIR=$(dirname "${TARGET_AUTH}")
-    mkdir -p "${TARGET_DIR}"
-    cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
-
-    if [ -n "${TARGET_USER}" ] && id -u "${TARGET_USER}" >/dev/null 2>&1; then
-        TARGET_GROUP=$(id -gn "${TARGET_USER}" 2>/dev/null || true)
-        if [ -n "${TARGET_GROUP}" ]; then
-            chown "${TARGET_USER}:${TARGET_GROUP}" "${TARGET_DIR}" "${TARGET_AUTH}"
+    if [ -n "\${TARGET_USER}" ] && id -u "\${TARGET_USER}" >/dev/null 2>&1; then
+        TARGET_GROUP=\$(id -gn "\${TARGET_USER}" 2>/dev/null || true)
+        if [ -n "\${TARGET_GROUP}" ]; then
+            chown "\${TARGET_USER}:\${TARGET_GROUP}" "\${TARGET_DIR}" "\${TARGET_AUTH}"
         else
-            chown "${TARGET_USER}" "${TARGET_DIR}" "${TARGET_AUTH}"
+            chown "\${TARGET_USER}" "\${TARGET_DIR}" "\${TARGET_AUTH}"
         fi
     fi
 
-    chmod 700 "${TARGET_DIR}"
-    chmod 600 "${TARGET_AUTH}"
+    chmod 700 "\${TARGET_DIR}"
+    chmod 600 "\${TARGET_AUTH}"
 fi
 
 EOF
