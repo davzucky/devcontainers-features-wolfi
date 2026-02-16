@@ -37,6 +37,7 @@ echo "Installing common packages..."
 apk add --no-cache \
     bash \
     bash-completion \
+    bat \
     openssh-client \
     gnupg \
     procps \
@@ -52,6 +53,7 @@ apk add --no-cache \
     unzip \
     xz \
     zip \
+    neovim \
     nano \
     vim \
     less \
@@ -65,7 +67,13 @@ apk add --no-cache \
     grep \
     shadow \
     strace \
-    git
+    git \
+    gnu-libiconv
+
+if ! command -v iconv >/dev/null 2>&1 && command -v gnu-iconv >/dev/null 2>&1; then
+    mkdir -p /usr/local/bin
+    ln -sf /usr/bin/gnu-iconv /usr/local/bin/iconv
+fi
 
 if [ "${INSTALL_ZSH}" = "true" ]; then
     echo "Installing zsh..."
