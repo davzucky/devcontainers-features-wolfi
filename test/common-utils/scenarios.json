@@ -14,6 +14,7 @@
             "bash": {},
             "common-utils": {
                 "installZsh": false,
+                "configureZshAsDefaultShell": false,
                 "installOhMyZsh": false,
                 "upgradePackages": false
             }
