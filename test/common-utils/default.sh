@@ -6,6 +6,9 @@ source dev-container-features-test-lib
 
 check "curl installed" command -v curl
 check "git installed" command -v git
+check "iconv installed" command -v iconv
+check "bat installed" command -v bat
+check "nvim installed" command -v nvim
 check "zsh installed" command -v zsh
 check "default user exists" id -u vscode
 check "default user in sudo group" bash -lc "id -nG vscode | tr ' ' '\\n' | grep -qx sudo"
