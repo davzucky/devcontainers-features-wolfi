@@ -32,5 +32,17 @@
                 "useGitAuth": true
             }
         }
+    },
+    "with_import_auth": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "export-auth-posix": "mkdir -p ${TEMP:-/tmp}/gh && printf 'github.com\\tghp_invalid\\n' > ${TEMP:-/tmp}/gh/auth-status.tsv"
+        },
+        "features": {
+            "bash": {},
+            "gh": {
+                "importAuth": true
+            }
+        }
     }
 }

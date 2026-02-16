@@ -4,6 +4,7 @@ set -e
 VERSION=${VERSION:-"latest"}
 COPY_CONFIG=${COPYCONFIG:-"false"}
 USE_GIT_AUTH=${USEGITAUTH:-"false"}
+IMPORT_AUTH=${IMPORTAUTH:-"false"}
 
 echo "Installing gh..."
 
@@ -62,6 +63,8 @@ set -e
 SOURCE_CONFIG="/tmp/gh-host-tmp/hosts.yml"
 FLAG_FILE="/usr/local/share/gh-copyconfig.flag"
 AUTH_FLAG_FILE="/usr/local/share/gh-git-auth.flag"
+SOURCE_AUTH_EXPORT="/tmp/gh-host-tmp/auth-status.tsv"
+IMPORT_AUTH_FLAG_FILE="/usr/local/share/gh-import-auth.flag"
 TARGET_USER="${RESOLVED_TARGET_USER}"
 TARGET_HOME="${RESOLVED_TARGET_HOME}"
 
@@ -126,6 +129,30 @@ if [ -f "\${AUTH_FLAG_FILE}" ]; then
     fi
 fi
 
+if [ -f "\${IMPORT_AUTH_FLAG_FILE}" ]; then
+    if [ -f "\${SOURCE_AUTH_EXPORT}" ]; then
+        if command -v gh >/dev/null 2>&1; then
+            TAB_CHAR=\$(printf '\t')
+            while IFS="\${TAB_CHAR}" read -r HOSTNAME TOKEN || [ -n "\${HOSTNAME}" ]; do
+                if [ -z "\${HOSTNAME}" ] || [ -z "\${TOKEN}" ]; then
+                    continue
+                fi
+                if printf '%s' "\${TOKEN}" | gh auth login --hostname "\${HOSTNAME}" --with-token >/dev/null 2>&1; then
+                    echo "Imported gh auth for \${HOSTNAME}"
+                else
+                    echo "Failed to import gh auth for \${HOSTNAME}; continuing"
+                fi
+            done < "\${SOURCE_AUTH_EXPORT}"
+        else
+            echo "gh not found; skipping gh auth import"
+        fi
+
+        rm -f "\${SOURCE_AUTH_EXPORT}"
+    else
+        echo "No gh auth export file found; skipping gh auth import"
+    fi
+fi
+
 EOF
 
 chmod +x /usr/local/share/gh-config-copy.sh
@@ -138,6 +165,11 @@ fi
 if [ "${USE_GIT_AUTH}" = "true" ]; then
     echo "Enabling gh git auth"
     : > /usr/local/share/gh-git-auth.flag
+fi
+
+if [ "${IMPORT_AUTH}" = "true" ]; then
+    echo "Enabling gh auth import"
+    : > /usr/local/share/gh-import-auth.flag
 fi
 
 echo "gh installed successfully"
