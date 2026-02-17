@@ -1,9 +1,10 @@
 #!/bin/sh
 set -e
 
-TEMP_DIR=${TEMP:-"/tmp"}
+TEMP_DIR=${TMPDIR:-"/tmp"}
 TARGET_DIR="${TEMP_DIR}/gh"
 TARGET_EXPORT="${TARGET_DIR}/auth-status.tsv"
+TARGET_EXPORT_TMP="${TARGET_EXPORT}.tmp"
 JQ_EXPR='.hosts | to_entries[] | .key as $host | (.value | if type == "array" then .[] else . end) | (.oauth_token // .token // "") as $token | select($token != "") | [$host, $token] | @tsv'
 
 umask 077
@@ -13,10 +14,14 @@ if ! command -v gh >/dev/null 2>&1; then
     exit 0
 fi
 
-if gh auth status --json hosts --show-token --jq "${JQ_EXPR}" > "${TARGET_EXPORT}" 2>/dev/null; then
-    if [ ! -s "${TARGET_EXPORT}" ]; then
-        rm -f "${TARGET_EXPORT}"
+rm -f "${TARGET_EXPORT_TMP}"
+if gh auth status --json hosts --show-token --jq "${JQ_EXPR}" > "${TARGET_EXPORT_TMP}" 2>/dev/null; then
+    if [ ! -s "${TARGET_EXPORT_TMP}" ]; then
+        rm -f "${TARGET_EXPORT_TMP}" "${TARGET_EXPORT}"
     else
+        mv "${TARGET_EXPORT_TMP}" "${TARGET_EXPORT}"
         chmod 600 "${TARGET_EXPORT}"
     fi
+else
+    rm -f "${TARGET_EXPORT_TMP}"
 fi

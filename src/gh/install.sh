@@ -88,11 +88,10 @@ if [ -f "\${IMPORT_AUTH_FLAG_FILE}" ]; then
                     echo "Failed to import gh auth for \${HOSTNAME}; continuing"
                 fi
             done < "\${SOURCE_AUTH_EXPORT}"
+            rm -f "\${SOURCE_AUTH_EXPORT}"
         else
             echo "gh not found; skipping gh auth import"
         fi
-
-        rm -f "\${SOURCE_AUTH_EXPORT}"
     else
         echo "No gh auth export file found; skipping gh auth import"
     fi
