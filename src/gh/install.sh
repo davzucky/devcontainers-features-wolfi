@@ -7,15 +7,33 @@ IMPORT_AUTH=${IMPORTAUTH:-"false"}
 
 echo "Installing gh..."
 
+install_apk_with_retry() {
+    ATTEMPT=1
+    MAX_ATTEMPTS=3
+    while [ "${ATTEMPT}" -le "${MAX_ATTEMPTS}" ]; do
+        if apk add --no-cache "$@"; then
+            return 0
+        fi
+        if [ "${ATTEMPT}" -lt "${MAX_ATTEMPTS}" ]; then
+            echo "apk add failed (attempt ${ATTEMPT}/${MAX_ATTEMPTS}), retrying..."
+            sleep 2
+        fi
+        ATTEMPT=$((ATTEMPT + 1))
+    done
+    return 1
+}
+
 apk update
 if [ "${VERSION}" = "latest" ]; then
-    apk add --no-cache gh
+    GH_PACKAGE="gh"
 else
-    apk add --no-cache "gh=${VERSION}"
+    GH_PACKAGE="gh=${VERSION}"
 fi
 
 if [ "${USE_GIT_AUTH}" = "true" ]; then
-    apk add --no-cache git
+    install_apk_with_retry "${GH_PACKAGE}" git
+else
+    install_apk_with_retry "${GH_PACKAGE}"
 fi
 
 if ! command -v gh >/dev/null 2>&1; then
