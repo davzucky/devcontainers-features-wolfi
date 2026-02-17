@@ -13,7 +13,12 @@ if not exist "%TARGET_DIR%" mkdir "%TARGET_DIR%"
 where gh >nul 2>nul
 if errorlevel 1 goto :end
 
-gh auth status --active --json hosts --show-token --jq ".hosts | to_entries[] | .key as $host | (.value | if type == \"array\" then .[] else . end) | (.oauth_token // .token // \"\") as $token | select($token != \"\") | [$host, $token] | @tsv" > "%TARGET_EXPORT%" 2>nul
+gh auth status --json hosts --show-token --jq ".hosts | to_entries[] | .key as $host | (.value | if type == \"array\" then .[] else . end) | (.oauth_token // .token // \"\") as $token | select($token != \"\") | [$host, $token] | @tsv" > "%TARGET_EXPORT%" 2>nul
+
+if exist "%TARGET_EXPORT%" (
+    icacls "%TARGET_EXPORT%" /inheritance:r >nul 2>nul
+    icacls "%TARGET_EXPORT%" /grant:r "%USERNAME%:F" >nul 2>nul
+)
 
 for %%I in ("%TARGET_EXPORT%") do if exist "%%~fI" if %%~zI EQU 0 del /Q "%%~fI"
 

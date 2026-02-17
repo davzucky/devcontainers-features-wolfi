@@ -28,7 +28,6 @@ mkdir -p /usr/local/share
 
 cat << EOF > /usr/local/share/gh-post-start.sh
 #!/bin/sh
-set -e
 
 AUTH_FLAG_FILE="/usr/local/share/gh-git-auth.flag"
 SOURCE_AUTH_EXPORT="/tmp/gh-host-tmp/auth-status.tsv"
