@@ -9,18 +9,6 @@
             "gh": {}
         }
     },
-    "with_config": {
-        "image": "chainguard/wolfi-base:latest",
-        "initializeCommand": {
-            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/gh || true"
-        },
-        "features": {
-            "bash": {},
-            "gh": {
-                "copyConfig": true
-            }
-        }
-    },
     "with_git_auth": {
         "image": "chainguard/wolfi-base:latest",
         "initializeCommand": {
@@ -30,6 +18,18 @@
             "bash": {},
             "gh": {
                 "useGitAuth": true
+            }
+        }
+    },
+    "with_import_auth": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "export-auth-posix": "mkdir -p ${TEMP:-/tmp}/gh && printf 'github.com\\tghp_invalid\\n' > ${TEMP:-/tmp}/gh/auth-status.tsv"
+        },
+        "features": {
+            "bash": {},
+            "gh": {
+                "importAuth": true
             }
         }
     }

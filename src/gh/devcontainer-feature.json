@@ -1,7 +1,7 @@
 {
     "name": "gh",
     "id": "gh",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "description": "Installs GitHub CLI (gh) on Wolfi base images.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/gh",
     "options": {
@@ -10,15 +10,15 @@
             "default": "latest",
             "description": "Version of gh to install (use 'latest' or a specific apk version)."
         },
-        "copyConfig": {
-            "type": "boolean",
-            "default": false,
-            "description": "Whether to copy gh hosts.yml from the host into the container."
-        },
         "useGitAuth": {
             "type": "boolean",
             "default": false,
             "description": "Whether to configure git credential helper for the repository remote using gh."
+        },
+        "importAuth": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to import gh auth host/token pairs from the host export file."
         }
     },
     "mounts": [
@@ -28,5 +28,5 @@
             "type": "bind"
         }
     ],
-    "postStartCommand": "/usr/local/share/gh-config-copy.sh"
+    "postStartCommand": "/usr/local/share/gh-post-start.sh"
 }
