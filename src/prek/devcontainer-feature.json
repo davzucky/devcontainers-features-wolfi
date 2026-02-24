@@ -1,0 +1,17 @@
+{
+    "name": "prek",
+    "id": "prek",
+    "version": "1.0.0",
+    "description": "Installs prek using uv tool install on Wolfi base images.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/prek",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "Version of prek to install (use 'latest' or a specific PyPI version)."
+        }
+    },
+    "dependsOn": {
+        "ghcr.io/davzucky/devcontainers-features-wolfi/python": {}
+    }
+}

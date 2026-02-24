@@ -1,0 +1,18 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "prek": {}
+        }
+    },
+    "version_0_3_3": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "prek": {
+                "version": "0.3.3"
+            }
+        }
+    }
+}

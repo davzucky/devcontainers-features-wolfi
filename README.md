@@ -15,6 +15,7 @@ The following features are available:
 - [gh](./src/gh/README.md) - Installs GitHub CLI (gh) on Wolfi base images
 - [node](./src/node/README.md) - Installs Node.js and common Node.js utilities on Wolfi base images
 - [opencode](./src/opencode/README.md) - Installs opencode CLI on Wolfi base images
+- [prek](./src/prek/README.md) - Installs prek using uv tool install on Wolfi base images
 - [python](./src/python/README.md) - Installs Python and common Python utilities on Wolfi base images
 - [user](./src/user/README.md) - Manages user creation and configuration in development containers
 

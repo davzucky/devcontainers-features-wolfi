@@ -42,6 +42,7 @@ jobs:
           - glab
           - node
           - opencode
+          - prek
           - python
     steps:
       - uses: actions/checkout@v4
