@@ -20,24 +20,46 @@ validate_bool() {
     fi
 }
 
+validate_address_pool() {
+    VALUE="$1"
+
+    case "${VALUE}" in
+        "")
+            ;;
+        *[!A-Za-z0-9=,./:-]*)
+            echo "dockerDefaultAddressPool contains unsupported characters."
+            exit 1
+            ;;
+    esac
+}
+
 resolve_username() {
     CANDIDATE="$1"
 
     if [ -z "${CANDIDATE}" ] || [ "${CANDIDATE}" = "auto" ] || [ "${CANDIDATE}" = "automatic" ]; then
-        if [ -n "${_REMOTE_USER}" ] && [ "${_REMOTE_USER}" != "root" ] && [ "${_REMOTE_USER}" != "0" ]; then
-            echo "${_REMOTE_USER}"
+        CANDIDATE="${_REMOTE_USER:-}"
+
+        case "${CANDIDATE}" in
+            ''|root|0)
+                CANDIDATE=""
+                ;;
+            *[!0-9]*)
+                echo "${CANDIDATE}"
+                return
+                ;;
+        esac
+
+        if [ -z "${CANDIDATE}" ]; then
+            for CURRENT_USER in devcontainer vscode node codespace; do
+                if id -u "${CURRENT_USER}" >/dev/null 2>&1; then
+                    echo "${CURRENT_USER}"
+                    return
+                fi
+            done
+
+            echo "vscode"
             return
         fi
-
-        for CURRENT_USER in devcontainer vscode node codespace; do
-            if id -u "${CURRENT_USER}" >/dev/null 2>&1; then
-                echo "${CURRENT_USER}"
-                return
-            fi
-        done
-
-        echo "vscode"
-        return
     fi
 
     if [ "${CANDIDATE}" = "none" ] || [ "${CANDIDATE}" = "root" ] || [ "${CANDIDATE}" = "0" ]; then
@@ -87,6 +109,7 @@ ensure_user() {
 validate_bool "${INSTALL_DOCKER_BUILDX}" "installDockerBuildx"
 validate_bool "${AZURE_DNS_AUTO_DETECTION}" "azureDnsAutoDetection"
 validate_bool "${DISABLE_IP6_TABLES}" "disableIp6tables"
+validate_address_pool "${DOCKER_DEFAULT_ADDRESS_POOL}"
 
 case "${DOCKER_DASH_COMPOSE_VERSION}" in
     none|v2)
@@ -116,6 +139,12 @@ fi
 
 echo "Installing packages: ${PACKAGES}"
 apk add --no-cache ${PACKAGES}
+
+DIND_BIN="$(command -v dind || true)"
+if [ -z "${DIND_BIN}" ]; then
+    echo "Failed to locate dind after package installation."
+    exit 1
+fi
 
 ensure_user
 
@@ -156,6 +185,7 @@ set -e
 AZURE_DNS_AUTO_DETECTION='${AZURE_DNS_AUTO_DETECTION}'
 DOCKER_DEFAULT_ADDRESS_POOL='${DOCKER_DEFAULT_ADDRESS_POOL}'
 DOCKER_DEFAULT_IP6_TABLES='${DOCKER_DEFAULT_IP6_TABLES}'
+DIND_BIN='${DIND_BIN}'
 EOF
 
 cat >> "${INIT_SCRIPT}" <<'EOF'
@@ -168,27 +198,34 @@ sudo_if() {
 }
 
 start_dockerd() {
+    set +e
+    sudo_if find /run /var/run -iname 'docker*.pid' -delete
+    sudo_if find /run /var/run -iname 'container*.pid' -delete
+    set -e
+
+    set -- "${DIND_BIN}" /usr/local/share/docker-in-docker/dockerd-entrypoint.sh dockerd
+
     if grep -qi 'internal.cloudapp.net' /etc/resolv.conf 2>/dev/null && [ "${AZURE_DNS_AUTO_DETECTION}" = "true" ]; then
         echo "Setting dockerd Azure DNS."
-        CUSTOMDNS="--dns 168.63.129.16"
+        set -- "$@" --dns 168.63.129.16
     else
         echo "Not setting dockerd DNS manually."
-        CUSTOMDNS=""
     fi
 
     if [ -n "${DOCKER_DEFAULT_ADDRESS_POOL}" ]; then
-        DEFAULT_ADDRESS_POOL="--default-address-pool ${DOCKER_DEFAULT_ADDRESS_POOL}"
-    else
-        DEFAULT_ADDRESS_POOL=""
+        set -- "$@" "--default-address-pool=${DOCKER_DEFAULT_ADDRESS_POOL}"
     fi
 
-    START_COMMAND="find /run /var/run -iname 'docker*.pid' -delete || :; find /run /var/run -iname 'container*.pid' -delete || :; /usr/bin/dind /usr/local/share/docker-in-docker/dockerd-entrypoint.sh dockerd ${CUSTOMDNS} ${DEFAULT_ADDRESS_POOL} ${DOCKER_DEFAULT_IP6_TABLES} > /tmp/dockerd.log 2>&1 &"
+    if [ -n "${DOCKER_DEFAULT_IP6_TABLES}" ]; then
+        set -- "$@" "${DOCKER_DEFAULT_IP6_TABLES}"
+    fi
 
     if [ "$(id -u)" -ne 0 ]; then
-        sudo /bin/sh -c "${START_COMMAND}"
-    else
-        /bin/sh -c "${START_COMMAND}"
+        sudo "$@" > /tmp/dockerd.log 2>&1 &
+        return
     fi
+
+    "$@" > /tmp/dockerd.log 2>&1 &
 }
 
 retry_docker_start_count=0

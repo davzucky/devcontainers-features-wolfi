@@ -46,5 +46,15 @@
             }
         },
         "containerUser": "vscode"
+    },
+    "azure_dns_autodetection_false": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "docker-in-docker": {
+                "azureDnsAutoDetection": false
+            }
+        },
+        "containerUser": "vscode"
     }
 }

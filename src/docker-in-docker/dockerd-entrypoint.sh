@@ -105,22 +105,10 @@ if [ "$#" -eq 0 ] || [ "${1#-}" != "$1" ]; then
 
 	if [ -n "${DOCKER_TLS_CERTDIR:-}" ]; then
 		_tls_generate_certs "$DOCKER_TLS_CERTDIR"
-		set -- dockerd \
-			--host="$dockerSocket" \
-			--host=tcp://0.0.0.0:2376 \
-			--tlsverify \
-			--tlscacert "$DOCKER_TLS_CERTDIR/server/ca.pem" \
-			--tlscert "$DOCKER_TLS_CERTDIR/server/cert.pem" \
-			--tlskey "$DOCKER_TLS_CERTDIR/server/key.pem" \
-			"$@"
-		DOCKERD_ROOTLESS_ROOTLESSKIT_FLAGS="${DOCKERD_ROOTLESS_ROOTLESSKIT_FLAGS:-} -p 0.0.0.0:2376:2376/tcp"
-	else
-		set -- dockerd \
-			--host="$dockerSocket" \
-			--host=tcp://0.0.0.0:2375 \
-			"$@"
-		DOCKERD_ROOTLESS_ROOTLESSKIT_FLAGS="${DOCKERD_ROOTLESS_ROOTLESSKIT_FLAGS:-} -p 0.0.0.0:2375:2375/tcp"
 	fi
+	set -- dockerd \
+		--host="$dockerSocket" \
+		"$@"
 fi
 
 if [ "$1" = 'dockerd' ]; then
