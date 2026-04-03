@@ -1,0 +1,57 @@
+{
+    "name": "docker-in-docker",
+    "id": "docker-in-docker",
+    "version": "1.0.0",
+    "description": "Run a Docker daemon inside Wolfi-based development containers using Wolfi packages.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/docker-in-docker",
+    "options": {
+        "installDockerBuildx": {
+            "type": "boolean",
+            "default": true,
+            "description": "Install Docker Buildx."
+        },
+        "dockerDashComposeVersion": {
+            "type": "string",
+            "enum": [
+                "none",
+                "v2"
+            ],
+            "default": "v2",
+            "description": "Default version of Docker Compose (v2 or none)."
+        },
+        "azureDnsAutoDetection": {
+            "type": "boolean",
+            "default": true,
+            "description": "Allow automatically setting the dockerd DNS server when the installation script detects it is running in Azure."
+        },
+        "dockerDefaultAddressPool": {
+            "type": "string",
+            "default": "",
+            "description": "Define default address pools for Docker networks. e.g. base=192.168.0.0/16,size=24"
+        },
+        "disableIp6tables": {
+            "type": "boolean",
+            "default": false,
+            "description": "Disable ip6tables for the inner Docker daemon."
+        }
+    },
+    "entrypoint": "/usr/local/share/docker-in-docker-init.sh",
+    "privileged": true,
+    "containerEnv": {
+        "DOCKER_BUILDKIT": "1"
+    },
+    "mounts": [
+        {
+            "source": "dind-var-lib-docker-${devcontainerId}",
+            "target": "/var/lib/docker",
+            "type": "volume"
+        }
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-azuretools.vscode-docker"
+            ]
+        }
+    }
+}
