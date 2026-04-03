@@ -197,13 +197,15 @@ sudo_if() {
     fi
 }
 
+DOCKERD_PID=""
+
 start_dockerd() {
     set +e
     sudo_if find /run /var/run -iname 'docker*.pid' -delete
     sudo_if find /run /var/run -iname 'container*.pid' -delete
     set -e
 
-    set -- "${DIND_BIN}" /usr/local/share/docker-in-docker/dockerd-entrypoint.sh dockerd
+    set -- "${DIND_BIN}" /usr/local/share/docker-in-docker/dockerd-entrypoint.sh
 
     if grep -qi 'internal.cloudapp.net' /etc/resolv.conf 2>/dev/null && [ "${AZURE_DNS_AUTO_DETECTION}" = "true" ]; then
         echo "Setting dockerd Azure DNS."
@@ -222,10 +224,24 @@ start_dockerd() {
 
     if [ "$(id -u)" -ne 0 ]; then
         sudo "$@" > /tmp/dockerd.log 2>&1 &
+    else
+        "$@" > /tmp/dockerd.log 2>&1 &
+    fi
+
+    DOCKERD_PID=$!
+}
+
+stop_dockerd() {
+    if [ -z "${DOCKERD_PID}" ]; then
         return
     fi
 
-    "$@" > /tmp/dockerd.log 2>&1 &
+    set +e
+    sudo_if kill "${DOCKERD_PID}" >/dev/null 2>&1
+    wait "${DOCKERD_PID}" >/dev/null 2>&1
+    set -e
+
+    DOCKERD_PID=""
 }
 
 retry_docker_start_count=0
@@ -247,10 +263,7 @@ do
 
     if [ "${docker_ok}" != "true" ] && [ "${retry_docker_start_count}" != "4" ]; then
         echo "(*) Failed to start docker, retrying..."
-        set +e
-        sudo_if pkill dockerd
-        sudo_if pkill containerd
-        set -e
+        stop_dockerd
     fi
 
     retry_docker_start_count=`expr ${retry_docker_start_count} + 1`
