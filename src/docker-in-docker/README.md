@@ -18,7 +18,7 @@ Run a Docker daemon inside Wolfi-based development containers using Wolfi packag
 | installDockerBuildx | Install Docker Buildx. | boolean | true |
 | dockerDashComposeVersion | Default version of Docker Compose (v2 or none). | string | v2 |
 | azureDnsAutoDetection | Allow automatically setting the dockerd DNS server when the installation script detects it is running in Azure. | boolean | true |
-| dockerDefaultAddressPool | Define default address pools for Docker networks. e.g. base=192.168.0.0/16,size=24 | string |  |
+| dockerDefaultAddressPool | Define default address pools for Docker networks. e.g. base=192.168.0.0/16,size=24 | string | - |
 | disableIptables | Disable iptables for the inner Docker daemon. Useful when nested Docker providers manage networking outside the container. | boolean | false |
 | disableIp6tables | Disable ip6tables for the inner Docker daemon. | boolean | false |
 
