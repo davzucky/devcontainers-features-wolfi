@@ -1,60 +1,70 @@
 {
-    "default": {
-        "image": "chainguard/wolfi-base:latest",
-        "features": {
-            "bash": {},
-            "docker-in-docker": {}
-        },
-        "containerUser": "vscode"
+  "default": {
+    "image": "chainguard/wolfi-base:latest",
+    "features": {
+      "bash": {},
+      "docker-in-docker": {}
     },
-    "without_compose": {
-        "image": "chainguard/wolfi-base:latest",
-        "features": {
-            "bash": {},
-            "docker-in-docker": {
-                "dockerDashComposeVersion": "none"
-            }
-        },
-        "containerUser": "vscode"
+    "containerUser": "vscode"
+  },
+  "without_compose": {
+    "image": "chainguard/wolfi-base:latest",
+    "features": {
+      "bash": {},
+      "docker-in-docker": {
+        "dockerDashComposeVersion": "none"
+      }
     },
-    "without_buildx": {
-        "image": "chainguard/wolfi-base:latest",
-        "features": {
-            "bash": {},
-            "docker-in-docker": {
-                "installDockerBuildx": false
-            }
-        },
-        "containerUser": "vscode"
+    "containerUser": "vscode"
+  },
+  "without_buildx": {
+    "image": "chainguard/wolfi-base:latest",
+    "features": {
+      "bash": {},
+      "docker-in-docker": {
+        "installDockerBuildx": false
+      }
     },
-    "docker_default_address_pool": {
-        "image": "chainguard/wolfi-base:latest",
-        "features": {
-            "bash": {},
-            "docker-in-docker": {
-                "dockerDefaultAddressPool": "base=192.168.0.0/16,size=24"
-            }
-        },
-        "containerUser": "vscode"
+    "containerUser": "vscode"
+  },
+  "docker_default_address_pool": {
+    "image": "chainguard/wolfi-base:latest",
+    "features": {
+      "bash": {},
+      "docker-in-docker": {
+        "dockerDefaultAddressPool": "base=192.168.0.0/16,size=24"
+      }
     },
-    "disable_ip6tables": {
-        "image": "chainguard/wolfi-base:latest",
-        "features": {
-            "bash": {},
-            "docker-in-docker": {
-                "disableIp6tables": true
-            }
-        },
-        "containerUser": "vscode"
+    "containerUser": "vscode"
+  },
+  "disable_iptables": {
+    "image": "chainguard/wolfi-base:latest",
+    "features": {
+      "bash": {},
+      "docker-in-docker": {
+        "disableIptables": true
+      }
     },
-    "azure_dns_autodetection_false": {
-        "image": "chainguard/wolfi-base:latest",
-        "features": {
-            "bash": {},
-            "docker-in-docker": {
-                "azureDnsAutoDetection": false
-            }
-        },
-        "containerUser": "vscode"
-    }
+    "containerUser": "vscode"
+  },
+  "disable_ip6tables": {
+    "image": "chainguard/wolfi-base:latest",
+    "features": {
+      "bash": {},
+      "docker-in-docker": {
+        "disableIp6tables": true
+      }
+    },
+    "containerUser": "vscode"
+  },
+  "azure_dns_autodetection_false": {
+    "image": "chainguard/wolfi-base:latest",
+    "features": {
+      "bash": {},
+      "docker-in-docker": {
+        "azureDnsAutoDetection": false
+      }
+    },
+    "containerUser": "vscode"
+  }
 }
