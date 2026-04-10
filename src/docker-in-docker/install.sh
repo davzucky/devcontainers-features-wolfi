@@ -5,10 +5,11 @@ INSTALL_DOCKER_BUILDX=${INSTALLDOCKERBUILDX:-"true"}
 DOCKER_DASH_COMPOSE_VERSION=${DOCKERDASHCOMPOSEVERSION:-"v2"}
 AZURE_DNS_AUTO_DETECTION=${AZUREDNSAUTODETECTION:-"true"}
 DOCKER_DEFAULT_ADDRESS_POOL=${DOCKERDEFAULTADDRESSPOOL:-""}
+DISABLE_IP_TABLES=${DISABLEIPTABLES:-"false"}
 DISABLE_IP6_TABLES=${DISABLEIP6TABLES:-"false"}
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
 DOCKER_MAJOR="29"
-INIT_SCRIPT="/usr/local/share/docker-in-docker-init.sh"
+INIT_SCRIPT="/usr/local/share/docker-init.sh"
 
 validate_bool() {
     VALUE="$1"
@@ -108,6 +109,7 @@ ensure_user() {
 
 validate_bool "${INSTALL_DOCKER_BUILDX}" "installDockerBuildx"
 validate_bool "${AZURE_DNS_AUTO_DETECTION}" "azureDnsAutoDetection"
+validate_bool "${DISABLE_IP_TABLES}" "disableIptables"
 validate_bool "${DISABLE_IP6_TABLES}" "disableIp6tables"
 validate_address_pool "${DOCKER_DEFAULT_ADDRESS_POOL}"
 
@@ -140,12 +142,6 @@ fi
 echo "Installing packages: ${PACKAGES}"
 apk add --no-cache ${PACKAGES}
 
-DIND_BIN="$(command -v dind || true)"
-if [ -z "${DIND_BIN}" ]; then
-    echo "Failed to locate dind after package installation."
-    exit 1
-fi
-
 ensure_user
 
 if ! grep -qE '^docker:' /etc/group; then
@@ -164,19 +160,21 @@ if [ "${FEATURE_USER}" != "root" ]; then
     fi
 fi
 
+DOCKER_DEFAULT_IP_TABLES=""
+if [ "${DISABLE_IP_TABLES}" = "true" ]; then
+    DOCKER_DEFAULT_IP_TABLES="--iptables=false"
+fi
+
 DOCKER_DEFAULT_IP6_TABLES=""
 if [ "${DISABLE_IP6_TABLES}" = "true" ]; then
     DOCKER_DEFAULT_IP6_TABLES="--ip6tables=false"
 fi
 
 mkdir -p /usr/local/share
-mkdir -p /usr/local/share/docker-in-docker
 
 if [ ! -e /var/run ]; then
     ln -s /run /var/run
 fi
-
-install -m755 ./dockerd-entrypoint.sh /usr/local/share/docker-in-docker/dockerd-entrypoint.sh
 
 cat > "${INIT_SCRIPT}" <<EOF
 #!/bin/sh
@@ -184,8 +182,8 @@ set -e
 
 AZURE_DNS_AUTO_DETECTION='${AZURE_DNS_AUTO_DETECTION}'
 DOCKER_DEFAULT_ADDRESS_POOL='${DOCKER_DEFAULT_ADDRESS_POOL}'
+DOCKER_DEFAULT_IP_TABLES='${DOCKER_DEFAULT_IP_TABLES}'
 DOCKER_DEFAULT_IP6_TABLES='${DOCKER_DEFAULT_IP6_TABLES}'
-DIND_BIN='${DIND_BIN}'
 EOF
 
 cat >> "${INIT_SCRIPT}" <<'EOF'
@@ -199,13 +197,62 @@ sudo_if() {
 
 DOCKERD_PID=""
 
+set_cgroup_nesting() {
+    if [ -f /sys/fs/cgroup/cgroup.controllers ]; then
+        sudo_if mkdir -p /sys/fs/cgroup/init
+        sudo_if sh -c 'xargs -rn1 < /sys/fs/cgroup/cgroup.procs > /sys/fs/cgroup/init/cgroup.procs || :'
+        sudo_if sh -c "sed -e 's/ / +/g' -e 's/^/+/' < /sys/fs/cgroup/cgroup.controllers > /sys/fs/cgroup/cgroup.subtree_control"
+    fi
+}
+
+resolve_docker_bridge_cidr() {
+    if ! grep -q '^nameserver 127\.0\.0\.11$' /etc/resolv.conf 2>/dev/null; then
+        return
+    fi
+
+    if grep -Eq '^# ExtServers: \[[^]]*172\.17\.0\.1' /etc/resolv.conf 2>/dev/null; then
+        echo '172.31.0.1/16'
+    fi
+}
+
 start_dockerd() {
     set +e
     sudo_if find /run /var/run -iname 'docker*.pid' -delete
     sudo_if find /run /var/run -iname 'container*.pid' -delete
     set -e
 
-    set -- "${DIND_BIN}" /usr/local/share/docker-in-docker/dockerd-entrypoint.sh
+    export container=docker
+
+    if [ -d /sys/kernel/security ] && ! mountpoint -q /sys/kernel/security; then
+        sudo_if mount -t securityfs none /sys/kernel/security || {
+            echo >&2 'Could not mount /sys/kernel/security.'
+            echo >&2 'AppArmor detection and --privileged mode might break.'
+        }
+    fi
+
+    retry_cgroup_nesting=0
+    while [ "${retry_cgroup_nesting}" -lt "5" ]; do
+        set +e
+        set_cgroup_nesting
+        cgroup_nesting_rc=$?
+        set -e
+
+        if [ "${cgroup_nesting_rc}" -eq "0" ]; then
+            break
+        fi
+
+        echo "(*) cgroup v2: Failed to enable nesting, retrying..."
+        retry_cgroup_nesting=`expr ${retry_cgroup_nesting} + 1`
+        sleep 1
+    done
+
+    set -- dockerd
+
+    DOCKER_BRIDGE_CIDR="$(resolve_docker_bridge_cidr)"
+    if [ -n "${DOCKER_BRIDGE_CIDR}" ]; then
+        echo "Setting dockerd bridge CIDR to ${DOCKER_BRIDGE_CIDR} to avoid DNS conflicts with the outer Docker resolver."
+        set -- "$@" "--bip=${DOCKER_BRIDGE_CIDR}"
+    fi
 
     if grep -qi 'internal.cloudapp.net' /etc/resolv.conf 2>/dev/null && [ "${AZURE_DNS_AUTO_DETECTION}" = "true" ]; then
         echo "Setting dockerd Azure DNS."
@@ -216,6 +263,10 @@ start_dockerd() {
 
     if [ -n "${DOCKER_DEFAULT_ADDRESS_POOL}" ]; then
         set -- "$@" "--default-address-pool=${DOCKER_DEFAULT_ADDRESS_POOL}"
+    fi
+
+    if [ -n "${DOCKER_DEFAULT_IP_TABLES}" ]; then
+        set -- "$@" "${DOCKER_DEFAULT_IP_TABLES}"
     fi
 
     if [ -n "${DOCKER_DEFAULT_IP6_TABLES}" ]; then
