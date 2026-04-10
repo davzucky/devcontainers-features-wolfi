@@ -1,7 +1,7 @@
 {
   "name": "docker-in-docker",
   "id": "docker-in-docker",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Run a Docker daemon inside Wolfi-based development containers using Wolfi packages.",
   "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/docker-in-docker",
   "options": {
@@ -35,9 +35,15 @@
       "type": "boolean",
       "default": false,
       "description": "Disable ip6tables for the inner Docker daemon."
+    },
+    "copyDockerConfig": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to copy Docker config.json from the host into the container."
     }
   },
   "entrypoint": "/usr/local/share/docker-init.sh",
+  "postStartCommand": "/usr/local/share/docker-config-copy.sh",
   "privileged": true,
   "containerEnv": {
     "DOCKER_BUILDKIT": "1"
@@ -47,6 +53,11 @@
       "source": "dind-var-lib-docker-${devcontainerId}",
       "target": "/var/lib/docker",
       "type": "volume"
+    },
+    {
+      "source": "${localEnv:TEMP:/tmp}/docker-in-docker",
+      "target": "/tmp/docker-in-docker-host-tmp",
+      "type": "bind"
     }
   ],
   "customizations": {

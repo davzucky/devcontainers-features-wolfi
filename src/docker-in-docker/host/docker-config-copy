@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+TEMP_DIR=${TEMP:-"/tmp"}
+TARGET_DIR="${TEMP_DIR}/docker-in-docker"
+TARGET_CONFIG="${TARGET_DIR}/config.json"
+
+if [ -n "${DOCKER_CONFIG:-}" ]; then
+    SOURCE_CONFIG="${DOCKER_CONFIG}/config.json"
+else
+    SOURCE_CONFIG="${HOME}/.docker/config.json"
+fi
+
+mkdir -p "${TARGET_DIR}"
+
+if [ -f "${SOURCE_CONFIG}" ]; then
+    cp "${SOURCE_CONFIG}" "${TARGET_CONFIG}"
+    chmod 600 "${TARGET_CONFIG}"
+fi
