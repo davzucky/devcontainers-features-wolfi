@@ -14,6 +14,11 @@
             "type": "boolean",
             "default": false,
             "description": "Whether to copy opencode auth.json from the host into the container."
+        },
+        "copyConfig": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy opencode opencode.json from the host into the container."
         }
     },
     "mounts": [

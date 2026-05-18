@@ -3,6 +3,7 @@ set -e
 
 VERSION=${VERSION:-"latest"}
 COPY_AUTH=${COPYAUTH:-"false"}
+COPY_CONFIG=${COPYCONFIG:-"false"}
 
 ARCH=$(uname -m)
 ARCHIVE_NAME=""
@@ -84,7 +85,7 @@ if ! command -v opencode >/dev/null 2>&1; then
     exit 1
 fi
 
-echo "Installing opencode auth copy hook"
+echo "Installing opencode config copy hook"
 mkdir -p /usr/local/share
 
 RESOLVED_TARGET_USER="${_REMOTE_USER:-}"
@@ -121,11 +122,14 @@ cat <<EOF > /usr/local/share/opencode-auth-copy.sh
 set -e
 
 SOURCE_AUTH="/tmp/opencode-host-tmp/auth.json"
+SOURCE_CONFIG="/tmp/opencode-host-tmp/opencode.json"
 FLAG_FILE="/usr/local/share/opencode-copyauth.flag"
+CONFIG_FLAG_FILE="/usr/local/share/opencode-copyconfig.flag"
 TARGET_USER="${RESOLVED_TARGET_USER}"
 TARGET_HOME="${RESOLVED_TARGET_HOME}"
 
 TARGET_AUTH="\${TARGET_HOME}/.local/share/opencode/auth.json"
+TARGET_CONFIG="\${TARGET_HOME}/.config/opencode/opencode.json"
 
 if [ -f "\${FLAG_FILE}" ] && [ -f "\${SOURCE_AUTH}" ]; then
     TARGET_DIR=\$(dirname "\${TARGET_AUTH}")
@@ -145,6 +149,24 @@ if [ -f "\${FLAG_FILE}" ] && [ -f "\${SOURCE_AUTH}" ]; then
     chmod 600 "\${TARGET_AUTH}"
 fi
 
+if [ -f "\${CONFIG_FLAG_FILE}" ] && [ -f "\${SOURCE_CONFIG}" ]; then
+    TARGET_DIR=\$(dirname "\${TARGET_CONFIG}")
+    mkdir -p "\${TARGET_DIR}"
+    cp "\${SOURCE_CONFIG}" "\${TARGET_CONFIG}"
+
+    if [ -n "\${TARGET_USER}" ] && id -u "\${TARGET_USER}" >/dev/null 2>&1; then
+        TARGET_GROUP=\$(id -gn "\${TARGET_USER}" 2>/dev/null || true)
+        if [ -n "\${TARGET_GROUP}" ]; then
+            chown "\${TARGET_USER}:\${TARGET_GROUP}" "\${TARGET_DIR}" "\${TARGET_CONFIG}"
+        else
+            chown "\${TARGET_USER}" "\${TARGET_DIR}" "\${TARGET_CONFIG}"
+        fi
+    fi
+
+    chmod 700 "\${TARGET_DIR}"
+    chmod 600 "\${TARGET_CONFIG}"
+fi
+
 EOF
 
 chmod +x /usr/local/share/opencode-auth-copy.sh
@@ -154,6 +176,13 @@ if [ "${COPY_AUTH}" = "true" ]; then
     : > /usr/local/share/opencode-copyauth.flag
 else
     rm -f /usr/local/share/opencode-copyauth.flag
+fi
+
+if [ "${COPY_CONFIG}" = "true" ]; then
+    echo "Enabling opencode config copy"
+    : > /usr/local/share/opencode-copyconfig.flag
+else
+    rm -f /usr/local/share/opencode-copyconfig.flag
 fi
 
 echo "opencode installed successfully"

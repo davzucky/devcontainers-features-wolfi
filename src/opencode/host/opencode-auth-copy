@@ -4,6 +4,7 @@ set -e
 TEMP_DIR=${TEMP:-"/tmp"}
 TARGET_DIR="${TEMP_DIR}/opencode"
 TARGET_AUTH="${TARGET_DIR}/auth.json"
+TARGET_CONFIG="${TARGET_DIR}/opencode.json"
 
 if [ -n "${OPENCODE_CONFIG_DIR:-}" ]; then
     SOURCE_AUTH="${OPENCODE_CONFIG_DIR}/auth.json"
@@ -11,9 +12,16 @@ else
     SOURCE_AUTH="${HOME}/.local/share/opencode/auth.json"
 fi
 
+SOURCE_CONFIG="${HOME}/.config/opencode/opencode.json"
+
 mkdir -p "${TARGET_DIR}"
 
 if [ -f "${SOURCE_AUTH}" ]; then
     cp "${SOURCE_AUTH}" "${TARGET_AUTH}"
     chmod 600 "${TARGET_AUTH}"
+fi
+
+if [ -f "${SOURCE_CONFIG}" ]; then
+    cp "${SOURCE_CONFIG}" "${TARGET_CONFIG}"
+    chmod 600 "${TARGET_CONFIG}"
 fi
