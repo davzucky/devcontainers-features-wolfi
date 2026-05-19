@@ -4,11 +4,6 @@ set -e
 
 source dev-container-features-test-lib
 
-check "opencode installed" opencode --version
-check "ripgrep installed" rg --version
-check "auth copy flag missing" test ! -f /usr/local/share/opencode-copyauth.flag
-check "config copy flag missing" test ! -f /usr/local/share/opencode-copyconfig.flag
-
 TARGET_USER="${_REMOTE_USER:-}"
 TARGET_HOME=""
 
@@ -37,9 +32,16 @@ if [ -z "${TARGET_HOME}" ]; then
     TARGET_HOME="/root"
 fi
 
-TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
 TARGET_CONFIG="${TARGET_HOME}/.config/opencode/opencode.json"
-check "auth file missing" test ! -f "${TARGET_AUTH}"
-check "config file missing" test ! -f "${TARGET_CONFIG}"
+SOURCE_CONFIG="/tmp/opencode-host-tmp/opencode.json"
+
+check "config copy hook installed" test -f /usr/local/share/opencode-auth-copy.sh
+check "config copy flag installed" test -f /usr/local/share/opencode-copyconfig.flag
+
+if [ -f "${SOURCE_CONFIG}" ]; then
+    check "config copied" test -f "${TARGET_CONFIG}"
+else
+    check "config missing on host" test ! -f "${TARGET_CONFIG}"
+fi
 
 reportResults

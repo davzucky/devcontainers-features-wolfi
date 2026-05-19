@@ -20,5 +20,17 @@
                 "copyAuth": true
             }
         }
+    },
+    "with_config": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "prepare-posix": "mkdir -p ${TEMP:-/tmp}/opencode && printf '{\"theme\":\"dark\"}' > ${TEMP:-/tmp}/opencode/opencode.json || true"
+        },
+        "features": {
+            "bash": {},
+            "opencode": {
+                "copyConfig": true
+            }
+        }
     }
 }
