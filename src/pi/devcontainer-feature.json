@@ -13,12 +13,13 @@
         "packageManager": {
             "type": "string",
             "enum": [
+                "automatic",
                 "auto",
                 "npm",
                 "pnpm"
             ],
-            "default": "auto",
-            "description": "Package manager to use when installing Pi. Auto prefers existing pnpm, then existing npm, then installs npm."
+            "default": "automatic",
+            "description": "Package manager to use when installing Pi. Automatic prefers existing pnpm, then existing npm, then installs npm."
         },
         "nodeVersion": {
             "type": "string",

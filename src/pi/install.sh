@@ -2,7 +2,7 @@
 set -e
 
 VERSION=${VERSION:-"latest"}
-PACKAGE_MANAGER=${PACKAGEMANAGER:-"auto"}
+PACKAGE_MANAGER=${PACKAGEMANAGER:-"automatic"}
 NODE_VERSION=${NODEVERSION:-"26"}
 COPY_SETTINGS=${COPYSETTINGS:-"false"}
 COPY_AUTH=${COPYAUTH:-"false"}
@@ -15,8 +15,32 @@ COPY_EXTENSIONS=${COPYEXTENSIONS:-"false"}
 COPY_THEMES=${COPYTHEMES:-"false"}
 COPY_ALL=${COPYALL:-"false"}
 
+validate_boolean() {
+    VARIABLE_NAME="$1"
+    VARIABLE_VALUE="$2"
+    case "${VARIABLE_VALUE}" in
+        true|false)
+            ;;
+        *)
+            echo "Unsupported boolean value for ${VARIABLE_NAME}: ${VARIABLE_VALUE}"
+            exit 1
+            ;;
+    esac
+}
+
+validate_boolean COPY_SETTINGS "${COPY_SETTINGS}"
+validate_boolean COPY_AUTH "${COPY_AUTH}"
+validate_boolean COPY_MODELS "${COPY_MODELS}"
+validate_boolean COPY_KEYBINDINGS "${COPY_KEYBINDINGS}"
+validate_boolean COPY_INSTRUCTIONS "${COPY_INSTRUCTIONS}"
+validate_boolean COPY_PROMPTS "${COPY_PROMPTS}"
+validate_boolean COPY_SKILLS "${COPY_SKILLS}"
+validate_boolean COPY_EXTENSIONS "${COPY_EXTENSIONS}"
+validate_boolean COPY_THEMES "${COPY_THEMES}"
+validate_boolean COPY_ALL "${COPY_ALL}"
+
 case "${PACKAGE_MANAGER}" in
-    auto|npm|pnpm)
+    automatic|auto|npm|pnpm)
         ;;
     *)
         echo "Unsupported package manager: ${PACKAGE_MANAGER}"
@@ -71,7 +95,7 @@ ensure_pnpm() {
 }
 
 SELECTED_PACKAGE_MANAGER="${PACKAGE_MANAGER}"
-if [ "${SELECTED_PACKAGE_MANAGER}" = "auto" ]; then
+if [ "${SELECTED_PACKAGE_MANAGER}" = "automatic" ] || [ "${SELECTED_PACKAGE_MANAGER}" = "auto" ]; then
     if command -v pnpm >/dev/null 2>&1; then
         SELECTED_PACKAGE_MANAGER="pnpm"
     elif command -v npm >/dev/null 2>&1; then
@@ -133,7 +157,7 @@ if [ -z "${RESOLVED_TARGET_HOME}" ]; then
     RESOLVED_TARGET_HOME="${HOME}"
 fi
 
-if [ -z "${RESOLVED_TARGET_USER}" ] || [ -z "${RESOLVED_TARGET_HOME}" ] || [ "${RESOLVED_TARGET_HOME}" = "/root" ]; then
+if [ -z "${RESOLVED_TARGET_USER}" ] || [ -z "${RESOLVED_TARGET_HOME}" ]; then
     FALLBACK_USER=$(awk -F: '$3>=1000 && $1!="nobody" {print $1; exit}' /etc/passwd)
     if [ -n "${FALLBACK_USER}" ] && id -u "${FALLBACK_USER}" >/dev/null 2>&1; then
         RESOLVED_TARGET_USER="${FALLBACK_USER}"
@@ -166,6 +190,10 @@ is_enabled() {
 
 own_path() {
     TARGET_PATH="$1"
+    if [ "$(id -u)" != "0" ]; then
+        return
+    fi
+
     if [ -n "${TARGET_USER}" ] && id -u "${TARGET_USER}" >/dev/null 2>&1; then
         TARGET_GROUP=$(id -gn "${TARGET_USER}" 2>/dev/null || true)
         if [ -n "${TARGET_GROUP}" ]; then

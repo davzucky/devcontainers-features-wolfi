@@ -1,7 +1,7 @@
 ## Usage notes
 
 - `version` supports `latest` or an explicit npm package version (with or without a leading `v`).
-- `packageManager=auto` prefers an existing `pnpm`, then an existing `npm`, then installs `npm`.
+- `packageManager=automatic` prefers an existing `pnpm`, then an existing `npm`, then installs `npm`. `auto` is accepted as a backward-compatible alias.
 - When `pnpm` is used, the installer configures `global-bin-dir` as `/usr/local/bin` and `global-dir` as `/usr/local/share/pnpm/global` before installing Pi.
 - If `node` is already installed, the feature does not install another Node.js version. If Node tooling must be installed, `nodeVersion` selects the `nodejs-<version>` package.
 - The feature bind-mounts `${localEnv:TEMP:/tmp}/pi` to `/tmp/pi-host-tmp`.

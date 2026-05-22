@@ -16,7 +16,7 @@ Installs Pi coding agent on Wolfi base images and optionally copies selected Pi 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
 | version | Select the Pi coding agent version to install. | string | latest |
-| packageManager | Package manager to use when installing Pi. Auto prefers existing pnpm, then existing npm, then installs npm. | string | auto |
+| packageManager | Package manager to use when installing Pi. Automatic prefers existing pnpm, then existing npm, then installs npm. | string | automatic |
 | nodeVersion | Node.js version to install when Pi installation requires adding Node tooling. Existing node installations are reused. | string | 26 |
 | copySettings | Whether to copy Pi settings.json from the host into the container. | boolean | false |
 | copyAuth | Whether to copy Pi auth.json from the host into the container. | boolean | false |
@@ -32,7 +32,7 @@ Installs Pi coding agent on Wolfi base images and optionally copies selected Pi 
 ## Usage notes
 
 - `version` supports `latest` or an explicit npm package version (with or without a leading `v`).
-- `packageManager=auto` prefers an existing `pnpm`, then an existing `npm`, then installs `npm`.
+- `packageManager=automatic` prefers an existing `pnpm`, then an existing `npm`, then installs `npm`. `auto` is accepted as a backward-compatible alias.
 - When `pnpm` is used, the installer configures `global-bin-dir` as `/usr/local/bin` and `global-dir` as `/usr/local/share/pnpm/global` before installing Pi.
 - If `node` is already installed, the feature does not install another Node.js version. If Node tooling must be installed, `nodeVersion` selects the `nodejs-<version>` package.
 - The feature bind-mounts `${localEnv:TEMP:/tmp}/pi` to `/tmp/pi-host-tmp`.
