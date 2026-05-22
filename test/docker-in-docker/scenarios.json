@@ -1,6 +1,9 @@
 {
   "default": {
     "image": "chainguard/wolfi-base:latest",
+    "initializeCommand": {
+      "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/docker-in-docker || true"
+    },
     "features": {
       "bash": {},
       "docker-in-docker": {}
@@ -9,6 +12,9 @@
   },
   "without_compose": {
     "image": "chainguard/wolfi-base:latest",
+    "initializeCommand": {
+      "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/docker-in-docker || true"
+    },
     "features": {
       "bash": {},
       "docker-in-docker": {
@@ -19,6 +25,9 @@
   },
   "without_buildx": {
     "image": "chainguard/wolfi-base:latest",
+    "initializeCommand": {
+      "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/docker-in-docker || true"
+    },
     "features": {
       "bash": {},
       "docker-in-docker": {
@@ -29,6 +38,9 @@
   },
   "docker_default_address_pool": {
     "image": "chainguard/wolfi-base:latest",
+    "initializeCommand": {
+      "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/docker-in-docker || true"
+    },
     "features": {
       "bash": {},
       "docker-in-docker": {
@@ -39,6 +51,9 @@
   },
   "disable_iptables": {
     "image": "chainguard/wolfi-base:latest",
+    "initializeCommand": {
+      "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/docker-in-docker || true"
+    },
     "features": {
       "bash": {},
       "docker-in-docker": {
@@ -49,6 +64,9 @@
   },
   "disable_ip6tables": {
     "image": "chainguard/wolfi-base:latest",
+    "initializeCommand": {
+      "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/docker-in-docker || true"
+    },
     "features": {
       "bash": {},
       "docker-in-docker": {
@@ -59,10 +77,26 @@
   },
   "azure_dns_autodetection_false": {
     "image": "chainguard/wolfi-base:latest",
+    "initializeCommand": {
+      "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/docker-in-docker || true"
+    },
     "features": {
       "bash": {},
       "docker-in-docker": {
         "azureDnsAutoDetection": false
+      }
+    },
+    "containerUser": "vscode"
+  },
+  "with_docker_config": {
+    "image": "chainguard/wolfi-base:latest",
+    "initializeCommand": {
+      "prepare-posix": "mkdir -p ${TEMP:-/tmp}/docker-in-docker && printf '{\"auths\":{\"example.invalid\":{}}}\n' > ${TEMP:-/tmp}/docker-in-docker/config.json || true"
+    },
+    "features": {
+      "bash": {},
+      "docker-in-docker": {
+        "copyDockerConfig": true
       }
     },
     "containerUser": "vscode"

@@ -7,6 +7,7 @@ AZURE_DNS_AUTO_DETECTION=${AZUREDNSAUTODETECTION:-"true"}
 DOCKER_DEFAULT_ADDRESS_POOL=${DOCKERDEFAULTADDRESSPOOL:-""}
 DISABLE_IP_TABLES=${DISABLEIPTABLES:-"false"}
 DISABLE_IP6_TABLES=${DISABLEIP6TABLES:-"false"}
+COPY_DOCKER_CONFIG=${COPYDOCKERCONFIG:-"false"}
 USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
 DOCKER_MAJOR="29"
 INIT_SCRIPT="/usr/local/share/docker-init.sh"
@@ -107,10 +108,28 @@ ensure_user() {
     chown -R "${FEATURE_USER}:$(id -gn "${FEATURE_USER}")" "/home/${FEATURE_USER}"
 }
 
+resolve_user_home() {
+    USER_NAME="$1"
+
+    if [ "${USER_NAME}" = "root" ]; then
+        echo "/root"
+        return
+    fi
+
+    HOME_DIR="$(awk -F: -v user="${USER_NAME}" '$1==user{print $6}' /etc/passwd)"
+    if [ -n "${HOME_DIR}" ]; then
+        echo "${HOME_DIR}"
+        return
+    fi
+
+    echo "/home/${USER_NAME}"
+}
+
 validate_bool "${INSTALL_DOCKER_BUILDX}" "installDockerBuildx"
 validate_bool "${AZURE_DNS_AUTO_DETECTION}" "azureDnsAutoDetection"
 validate_bool "${DISABLE_IP_TABLES}" "disableIptables"
 validate_bool "${DISABLE_IP6_TABLES}" "disableIp6tables"
+validate_bool "${COPY_DOCKER_CONFIG}" "copyDockerConfig"
 validate_address_pool "${DOCKER_DEFAULT_ADDRESS_POOL}"
 
 case "${DOCKER_DASH_COMPOSE_VERSION}" in
@@ -143,6 +162,7 @@ echo "Installing packages: ${PACKAGES}"
 apk add --no-cache ${PACKAGES}
 
 ensure_user
+FEATURE_HOME="$(resolve_user_home "${FEATURE_USER}")"
 
 if ! grep -qE '^docker:' /etc/group; then
     echo "(*) Creating missing docker group..."
@@ -171,6 +191,45 @@ if [ "${DISABLE_IP6_TABLES}" = "true" ]; then
 fi
 
 mkdir -p /usr/local/share
+
+cat > /usr/local/share/docker-config-copy.sh <<EOF
+#!/bin/sh
+set -e
+
+SOURCE_CONFIG="/tmp/docker-in-docker-host-tmp/config.json"
+FLAG_FILE="/usr/local/share/docker-copyconfig.flag"
+TARGET_USER="${FEATURE_USER}"
+TARGET_HOME="${FEATURE_HOME}"
+
+TARGET_DIR="\${TARGET_HOME}/.docker"
+TARGET_CONFIG="\${TARGET_DIR}/config.json"
+
+if [ -f "\${FLAG_FILE}" ] && [ -f "\${SOURCE_CONFIG}" ]; then
+    mkdir -p "\${TARGET_DIR}"
+    cp "\${SOURCE_CONFIG}" "\${TARGET_CONFIG}"
+
+    if [ -n "\${TARGET_USER}" ] && id -u "\${TARGET_USER}" >/dev/null 2>&1; then
+        TARGET_GROUP=\$(id -gn "\${TARGET_USER}" 2>/dev/null || true)
+        if [ -n "\${TARGET_GROUP}" ]; then
+            chown "\${TARGET_USER}:\${TARGET_GROUP}" "\${TARGET_DIR}" "\${TARGET_CONFIG}"
+        else
+            chown "\${TARGET_USER}" "\${TARGET_DIR}" "\${TARGET_CONFIG}"
+        fi
+    fi
+
+    chmod 700 "\${TARGET_DIR}"
+    chmod 600 "\${TARGET_CONFIG}"
+fi
+EOF
+
+chmod +x /usr/local/share/docker-config-copy.sh
+
+if [ "${COPY_DOCKER_CONFIG}" = "true" ]; then
+    echo "Enabling Docker config copy"
+    : > /usr/local/share/docker-copyconfig.flag
+else
+    rm -f /usr/local/share/docker-copyconfig.flag
+fi
 
 if [ ! -e /var/run ]; then
     ln -s /run /var/run
