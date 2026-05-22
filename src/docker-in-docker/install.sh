@@ -209,7 +209,7 @@ if [ -f "\${FLAG_FILE}" ] && [ -f "\${SOURCE_CONFIG}" ]; then
     cp "\${SOURCE_CONFIG}" "\${TARGET_CONFIG}"
 
     if [ -n "\${TARGET_USER}" ] && id -u "\${TARGET_USER}" >/dev/null 2>&1; then
-        TARGET_GROUP=$(id -gn "\${TARGET_USER}" 2>/dev/null || true)
+        TARGET_GROUP=\$(id -gn "\${TARGET_USER}" 2>/dev/null || true)
         if [ -n "\${TARGET_GROUP}" ]; then
             chown "\${TARGET_USER}:\${TARGET_GROUP}" "\${TARGET_DIR}" "\${TARGET_CONFIG}"
         else

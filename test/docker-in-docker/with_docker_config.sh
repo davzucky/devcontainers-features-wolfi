@@ -25,6 +25,7 @@ SOURCE_CONFIG="/tmp/docker-in-docker-host-tmp/config.json"
 
 check "docker config copy hook installed" test -f /usr/local/share/docker-config-copy.sh
 check "docker config copy flag installed" test -f /usr/local/share/docker-copyconfig.flag
+check "docker config copy resolves group at runtime" grep -q 'TARGET_GROUP=$(id -gn "${TARGET_USER}"' /usr/local/share/docker-config-copy.sh
 
 if [ -f "${SOURCE_CONFIG}" ]; then
     wait_for_file "${TARGET_CONFIG}"
