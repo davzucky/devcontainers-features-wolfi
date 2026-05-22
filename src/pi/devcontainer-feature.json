@@ -1,0 +1,96 @@
+{
+    "name": "pi",
+    "id": "pi",
+    "version": "1.0.0",
+    "description": "Installs Pi coding agent on Wolfi base images and optionally copies selected Pi agent configuration into the container running user's home.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/pi",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "Select the Pi coding agent version to install."
+        },
+        "packageManager": {
+            "type": "string",
+            "enum": [
+                "automatic",
+                "auto",
+                "npm",
+                "pnpm"
+            ],
+            "default": "automatic",
+            "description": "Package manager to use when installing Pi. Automatic prefers existing pnpm, then existing npm, then installs npm."
+        },
+        "nodeVersion": {
+            "type": "string",
+            "enum": [
+                "26",
+                "25",
+                "24",
+                "22",
+                "20",
+                "18"
+            ],
+            "default": "26",
+            "description": "Node.js version to install when Pi installation requires adding Node tooling. Existing node installations are reused."
+        },
+        "copySettings": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy Pi settings.json from the host into the container."
+        },
+        "copyAuth": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy Pi auth.json from the host into the container."
+        },
+        "copyModels": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy Pi models.json from the host into the container."
+        },
+        "copyKeybindings": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy Pi keybindings.json from the host into the container."
+        },
+        "copyInstructions": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy Pi instruction files (AGENTS.md, SYSTEM.md, APPEND_SYSTEM.md) from the host into the container."
+        },
+        "copyPrompts": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy Pi prompt templates from the host into the container."
+        },
+        "copySkills": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy Pi skills from the host into the container."
+        },
+        "copyExtensions": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy Pi extensions from the host into the container."
+        },
+        "copyThemes": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy Pi themes from the host into the container."
+        },
+        "copyAll": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to copy all supported Pi agent content from the host into the container. Package directories, sessions, and logs are never copied."
+        }
+    },
+    "mounts": [
+        {
+            "source": "${localEnv:TEMP:/tmp}/pi",
+            "target": "/tmp/pi-host-tmp",
+            "type": "bind"
+        }
+    ],
+    "postStartCommand": "/usr/local/share/pi-agent-copy.sh"
+}
