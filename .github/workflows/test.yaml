@@ -43,6 +43,7 @@ jobs:
           - glab
           - node
           - opencode
+          - pi
           - prek
           - python
     steps:

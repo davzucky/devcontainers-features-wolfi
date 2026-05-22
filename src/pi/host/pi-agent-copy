@@ -1,0 +1,52 @@
+#!/bin/sh
+set -e
+
+TEMP_DIR=${TEMP:-"/tmp"}
+TARGET_ROOT="${TEMP_DIR}/pi"
+TARGET_AGENT="${TARGET_ROOT}/agent"
+
+if [ -n "${PI_CODING_AGENT_DIR:-}" ]; then
+    SOURCE_AGENT="${PI_CODING_AGENT_DIR}"
+else
+    SOURCE_AGENT="${HOME}/.pi/agent"
+fi
+
+mkdir -p "${TARGET_ROOT}"
+rm -rf "${TARGET_AGENT}"
+mkdir -p "${TARGET_AGENT}"
+
+if [ ! -d "${SOURCE_AGENT}" ]; then
+    echo "Pi agent directory not found; created empty staging directory: ${SOURCE_AGENT}"
+    exit 0
+fi
+
+copy_file() {
+    ENTRY_NAME="$1"
+    if [ -f "${SOURCE_AGENT}/${ENTRY_NAME}" ]; then
+        cp "${SOURCE_AGENT}/${ENTRY_NAME}" "${TARGET_AGENT}/${ENTRY_NAME}"
+        chmod 600 "${TARGET_AGENT}/${ENTRY_NAME}"
+    fi
+}
+
+copy_dir() {
+    ENTRY_NAME="$1"
+    if [ -d "${SOURCE_AGENT}/${ENTRY_NAME}" ]; then
+        cp -R "${SOURCE_AGENT}/${ENTRY_NAME}" "${TARGET_AGENT}/${ENTRY_NAME}"
+        find "${TARGET_AGENT}/${ENTRY_NAME}" -type d -exec chmod 700 {} +
+        find "${TARGET_AGENT}/${ENTRY_NAME}" -type f -exec chmod 600 {} +
+    fi
+}
+
+copy_file settings.json
+copy_file auth.json
+copy_file models.json
+copy_file keybindings.json
+copy_file AGENTS.md
+copy_file SYSTEM.md
+copy_file APPEND_SYSTEM.md
+copy_dir prompts
+copy_dir skills
+copy_dir extensions
+copy_dir themes
+
+chmod 700 "${TARGET_AGENT}"

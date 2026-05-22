@@ -1,0 +1,36 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/pi || true"
+        },
+        "features": {
+            "bash": {},
+            "pi": {}
+        }
+    },
+    "with_copy_all": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "prepare-posix": "rm -rf ${TEMP:-/tmp}/pi && mkdir -p ${TEMP:-/tmp}/pi/agent/skills/test-skill ${TEMP:-/tmp}/pi/agent/prompts ${TEMP:-/tmp}/pi/agent/extensions ${TEMP:-/tmp}/pi/agent/themes ${TEMP:-/tmp}/pi/agent/npm ${TEMP:-/tmp}/pi/agent/git && printf '{}' > ${TEMP:-/tmp}/pi/agent/settings.json && printf '{\"token\":\"test\"}' > ${TEMP:-/tmp}/pi/agent/auth.json && printf '{}' > ${TEMP:-/tmp}/pi/agent/models.json && printf '{}' > ${TEMP:-/tmp}/pi/agent/keybindings.json && printf 'instructions' > ${TEMP:-/tmp}/pi/agent/AGENTS.md && printf 'system' > ${TEMP:-/tmp}/pi/agent/SYSTEM.md && printf 'append' > ${TEMP:-/tmp}/pi/agent/APPEND_SYSTEM.md && printf 'prompt' > ${TEMP:-/tmp}/pi/agent/prompts/review.md && printf 'name: test-skill' > ${TEMP:-/tmp}/pi/agent/skills/test-skill/SKILL.md && printf 'extension' > ${TEMP:-/tmp}/pi/agent/extensions/test.ts && printf '{}' > ${TEMP:-/tmp}/pi/agent/themes/test.json && printf 'blocked' > ${TEMP:-/tmp}/pi/agent/npm/package.txt && printf 'blocked' > ${TEMP:-/tmp}/pi/agent/git/package.txt || true"
+        },
+        "features": {
+            "bash": {},
+            "pi": {
+                "copyAll": true
+            }
+        }
+    },
+    "with_pnpm": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/pi || true"
+        },
+        "features": {
+            "bash": {},
+            "pi": {
+                "packageManager": "pnpm"
+            }
+        }
+    }
+}
