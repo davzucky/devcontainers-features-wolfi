@@ -67,7 +67,7 @@ if [ ! -d "${SOURCE_SKILLS}" ]; then
 fi
 
 rm -rf "${TARGET_SKILLS}"
-cp -R "${SOURCE_SKILLS}" "${TARGET_SKILLS}"
+cp -Rp "${SOURCE_SKILLS}" "${TARGET_SKILLS}"
 chmod 700 "${TARGET_AGENTS}" "${TARGET_SKILLS}"
 own_path "${TARGET_AGENTS}"
 HOOK_EOF

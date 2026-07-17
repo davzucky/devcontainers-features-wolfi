@@ -3,6 +3,11 @@ set -e
 
 source dev-container-features-test-lib
 
+if [ ! -f /usr/local/share/agent-skills-copy.sh ]; then
+    echo "agent-skills copy hook is missing: /usr/local/share/agent-skills-copy.sh"
+    exit 1
+fi
+
 HOOK_TARGET_HOME=$(awk -F= '$1=="TARGET_HOME" {gsub(/"/, "", $2); print $2; exit}' /usr/local/share/agent-skills-copy.sh)
 if [ -z "${HOOK_TARGET_HOME}" ]; then
     HOOK_TARGET_HOME="/root"
