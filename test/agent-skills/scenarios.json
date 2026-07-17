@@ -1,0 +1,13 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "prepare-posix": "rm -rf /tmp/agent-skills && mkdir -p /tmp/agent-skills/skills/test-skill/bin && printf 'name: test-skill' > /tmp/agent-skills/skills/test-skill/SKILL.md && printf '#!/bin/sh\\necho helper\\n' > /tmp/agent-skills/skills/test-skill/bin/helper.sh && chmod 755 /tmp/agent-skills/skills/test-skill/bin/helper.sh || true"
+        },
+        "postCreateCommand": "mkdir -p /root/.agents/skills/stale-skill && printf stale > /root/.agents/skills/stale-skill/SKILL.md",
+        "features": {
+            "bash": {},
+            "agent-skills": {}
+        }
+    }
+}

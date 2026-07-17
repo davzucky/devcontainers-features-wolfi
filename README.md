@@ -8,6 +8,7 @@ Most of the features available for devcontainers usually expect you to run a deb
 
 The following features are available:
 
+- [agent-skills](./src/agent-skills/README.md) - Copies shared agent skills into the container running user's home
 - [bash](./src/bash/README.md) - Installs bash and common shell utilities on Wolfi base images
 - [chromium](./src/chromium/README.md) - Installs Chromium browser on Wolfi base images
 - [common-utils](./src/common-utils/README.md) - Installs common command line utilities, configures users, and optionally sets up Zsh on Wolfi base images (lean Wolfi-native variant)

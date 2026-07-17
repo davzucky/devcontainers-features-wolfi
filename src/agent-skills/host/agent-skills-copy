@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+TEMP_DIR=${TEMP:-"/tmp"}
+TARGET_ROOT="${TEMP_DIR}/agent-skills"
+TARGET_SKILLS="${TARGET_ROOT}/skills"
+SOURCE_SKILLS="${HOME}/.agents/skills"
+
+mkdir -p "${TARGET_ROOT}"
+rm -rf "${TARGET_SKILLS}"
+mkdir -p "${TARGET_SKILLS}"
+
+if [ ! -d "${SOURCE_SKILLS}" ]; then
+    echo "Shared agent skills directory not found; created empty staging directory: ${SOURCE_SKILLS}"
+    exit 0
+fi
+
+cp -Rp "${SOURCE_SKILLS}/." "${TARGET_SKILLS}/"
