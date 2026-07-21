@@ -39,12 +39,22 @@ if [ "${INSTALL_PNPM}" = "true" ]; then
     echo "Installing pnpm..."
     case "${NODE_VERSION}" in
         18|20)
-            apk add --no-cache "pnpm<11"
+            PNPM_PACKAGE="pnpm<11"
             ;;
         *)
-            apk add --no-cache pnpm
+            PNPM_PACKAGE="pnpm"
             ;;
     esac
+
+    if ! apk add --no-cache "${PNPM_PACKAGE}"; then
+        echo "Failed to install ${PNPM_PACKAGE}"
+        exit 1
+    fi
+
+    if ! command -v pnpm >/dev/null 2>&1; then
+        echo "pnpm installation failed"
+        exit 1
+    fi
 fi
 
 echo "Done!"
