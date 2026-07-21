@@ -90,6 +90,8 @@ ensure_pnpm() {
         apk add --no-cache pnpm
     fi
 
+    export PNPM_HOME=/usr/local
+    export PATH="/usr/local/bin:${PATH}"
     pnpm config set --global global-bin-dir /usr/local/bin
     pnpm config set --global global-dir /usr/local/share/pnpm/global
 }

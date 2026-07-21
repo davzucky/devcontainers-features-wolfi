@@ -37,7 +37,14 @@ fi
 # Install pnpm if specified
 if [ "${INSTALL_PNPM}" = "true" ]; then
     echo "Installing pnpm..."
-    apk add --no-cache pnpm
+    case "${NODE_VERSION}" in
+        18|20)
+            apk add --no-cache "pnpm<11"
+            ;;
+        *)
+            apk add --no-cache pnpm
+            ;;
+    esac
 fi
 
 echo "Done!"
