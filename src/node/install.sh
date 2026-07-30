@@ -36,26 +36,56 @@ fi
 
 # Install pnpm if specified
 if [ "${INSTALL_PNPM}" = "true" ]; then
-    if command -v pnpm >/dev/null 2>&1; then
-        echo "pnpm already installed"
-    else
-        echo "Installing pnpm..."
-        case "${NODE_VERSION}" in
-            18|20)
-                PNPM_PACKAGE="pnpm<11"
-                ;;
-            *)
-                PNPM_PACKAGE="pnpm"
-                ;;
-        esac
+    case "${NODE_VERSION}" in
+        18|20)
+            PNPM_PACKAGE="pnpm<11"
+            ;;
+        *)
+            PNPM_PACKAGE="pnpm"
+            ;;
+    esac
 
+    install_pnpm_package() {
+        echo "Installing ${PNPM_PACKAGE}..."
         if ! apk add --no-cache "${PNPM_PACKAGE}"; then
             echo "Failed to install ${PNPM_PACKAGE}"
             exit 1
         fi
+    }
+
+    pnpm_is_compatible() {
+        case "${NODE_VERSION}" in
+            18|20)
+                PNPM_VERSION=$(pnpm --version 2>/dev/null || true)
+                PNPM_MAJOR=${PNPM_VERSION%%.*}
+                case "${PNPM_MAJOR}" in
+                    [0-9]|10)
+                        return 0
+                        ;;
+                    *)
+                        return 1
+                        ;;
+                esac
+                ;;
+            *)
+                pnpm --version >/dev/null 2>&1
+                ;;
+        esac
+    }
+
+    if command -v pnpm >/dev/null 2>&1; then
+        if pnpm_is_compatible; then
+            echo "pnpm already installed"
+        else
+            echo "Installed pnpm is incompatible with Node.js ${NODE_VERSION}, replacing it"
+            apk del pnpm pnpm-11 pnpm-11.8 2>/dev/null || true
+            install_pnpm_package
+        fi
+    else
+        install_pnpm_package
     fi
 
-    if ! command -v pnpm >/dev/null 2>&1; then
+    if ! command -v pnpm >/dev/null 2>&1 || ! pnpm_is_compatible; then
         echo "pnpm installation failed"
         exit 1
     fi
