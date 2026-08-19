@@ -6,12 +6,12 @@
             "chromium": {}
         }
     },
-    "version_144_0_7559_109_r2": {
+    "version_149_0_7827_53_r0": {
         "image": "chainguard/wolfi-base:latest",
         "features": {
             "bash": {},
             "chromium": {
-                "version": "144.0.7559.109-r2"
+                "version": "149.0.7827.53-r0"
             }
         }
     }
