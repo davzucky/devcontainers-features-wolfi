@@ -1,0 +1,22 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "t3code": {}
+        }
+    },
+    "configured_autostart": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "t3code": {
+                "autoStart": true,
+                "baseDir": "/tmp/devpod-t3/t3",
+                "host": "127.0.0.1",
+                "port": "3773",
+                "workspaceDir": "/workspaces/hawk"
+            }
+        }
+    }
+}

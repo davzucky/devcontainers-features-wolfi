@@ -19,6 +19,8 @@ The following features are available:
 - [opencode](./src/opencode/README.md) - Installs opencode CLI on Wolfi base images
 - [prek](./src/prek/README.md) - Installs prek using uv tool install on Wolfi base images
 - [python](./src/python/README.md) - Installs Python and common Python utilities on Wolfi base images
+- [t3code](./src/t3code/README.md) - Installs T3 Code CLI on Wolfi base images and optionally starts a persistent headless T3 server for DevPod workspaces
+- [tailscale](./src/tailscale/README.md) - Installs Tailscale on Wolfi base images and optionally starts a userspace daemon for DevPod workspaces
 - [user](./src/user/README.md) - Manages user creation and configuration in development containers
 
 Each feature is designed to work seamlessly with Wolfi base images and provides a secure, lean development environment.

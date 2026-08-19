@@ -47,6 +47,8 @@ jobs:
           - pi
           - prek
           - python
+          - t3code
+          - tailscale
     steps:
       - uses: actions/checkout@v4
 
