@@ -104,7 +104,7 @@ is_running() {
     if [ -z "${PID}" ] || ! kill -0 "${PID}" 2>/dev/null; then
         return 1
     fi
-    curl -fsS "http://${HOST}:${PORT}/" >/dev/null 2>&1
+    curl --connect-timeout 1 --max-time 2 -fsS "http://${HOST}:${PORT}/" >/dev/null 2>&1
 }
 
 if is_running; then
@@ -125,7 +125,7 @@ echo "$!" > "${PID_FILE}"
 
 READY=0
 for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-    if curl -fsS "http://${HOST}:${PORT}/" >/dev/null 2>&1; then
+    if curl --connect-timeout 1 --max-time 2 -fsS "http://${HOST}:${PORT}/" >/dev/null 2>&1; then
         READY=1
         break
     fi
