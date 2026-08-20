@@ -1,7 +1,7 @@
 {
     "name": "t3code",
     "id": "t3code",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Installs T3 Code CLI on Wolfi base images and optionally starts a persistent headless T3 server for DevPod workspaces.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/t3code",
     "options": {
@@ -9,17 +9,6 @@
             "type": "string",
             "default": "latest",
             "description": "Select the T3 Code CLI npm package version to install."
-        },
-        "nodeVersion": {
-            "type": "string",
-            "enum": [
-                "26",
-                "25",
-                "24",
-                "22"
-            ],
-            "default": "24",
-            "description": "Node.js version to install when T3 Code installation requires adding Node tooling. Existing node installations are reused."
         },
         "autoStart": {
             "type": "boolean",
@@ -47,5 +36,11 @@
             "description": "Workspace directory passed to T3. Empty means use the postStartCommand working directory."
         }
     },
-    "postStartCommand": "/usr/local/share/t3code-devpod-start.sh"
+    "postStartCommand": "/usr/local/share/t3code-devpod-start.sh",
+    "dependsOn": {
+        "ghcr.io/davzucky/devcontainers-features-wolfi/node": {
+            "nodeVersion": "24",
+            "installNpm": true
+        }
+    }
 }

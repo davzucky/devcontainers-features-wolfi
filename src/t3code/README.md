@@ -16,7 +16,6 @@ Installs T3 Code CLI on Wolfi base images and optionally starts a persistent hea
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
 | version | Select the T3 Code CLI npm package version to install. | string | latest |
-| nodeVersion | Node.js version to install when T3 Code installation requires adding Node tooling. Existing node installations are reused. | string | 24 |
 | autoStart | Whether to start a headless T3 Code server from the feature postStartCommand. | boolean | false |
 | baseDir | T3CODE_HOME/base directory for server state. Mount this from the host to persist T3 state. | string | /persist/devpod-t3/t3 |
 | host | Host/interface for the T3 server to bind. | string | 127.0.0.1 |
@@ -25,7 +24,8 @@ Installs T3 Code CLI on Wolfi base images and optionally starts a persistent hea
 
 ## Usage notes
 
-- The feature installs Node.js/npm plus native build dependencies needed by T3 Code's `node-pty` dependency, then installs the `t3` npm package globally.
+- The feature depends on this repository's `node` feature with `nodeVersion=24` and `installNpm=true`; it does not install Node.js or npm itself.
+- The feature installs native build dependencies needed by T3 Code's `node-pty` dependency, then installs the `t3` npm package globally.
 - `autoStart=false` only installs the CLI and startup hook. Set `autoStart=true` or runtime `T3CODE_AUTO_START=true` to start the server at container startup.
 - Persist `baseDir` with a host bind mount. It contains T3 settings, pairing/session state, provider settings, logs, and may contain secrets.
 - `workspaceDir` should be a path inside the DevPod workspace container. If empty, the post-start working directory is used.

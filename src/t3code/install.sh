@@ -2,7 +2,6 @@
 set -e
 
 VERSION=${VERSION:-"latest"}
-NODE_VERSION=${NODEVERSION:-"24"}
 AUTO_START=${AUTOSTART:-"false"}
 BASE_DIR=${BASEDIR:-"/persist/devpod-t3/t3"}
 HOST=${HOST:-"127.0.0.1"}
@@ -24,15 +23,6 @@ validate_boolean() {
 
 validate_boolean AUTO_START "${AUTO_START}"
 
-case "${NODE_VERSION}" in
-    26|25|24|22)
-        ;;
-    *)
-        echo "Unsupported Node.js version: ${NODE_VERSION}"
-        exit 1
-        ;;
-esac
-
 case "${PORT}" in
     ''|*[!0-9]*)
         echo "port must be numeric: ${PORT}"
@@ -44,17 +34,12 @@ apk update
 apk add --no-cache ca-certificates curl build-base python-3.13
 
 if ! command -v node >/dev/null 2>&1; then
-    echo "Installing Node.js ${NODE_VERSION}"
-    apk add --no-cache "nodejs-${NODE_VERSION}"
+    echo "node is required. Compose t3code with the node feature."
+    exit 1
 fi
 
 if ! command -v npm >/dev/null 2>&1; then
-    echo "Installing npm"
-    apk add --no-cache npm
-fi
-
-if ! command -v npm >/dev/null 2>&1; then
-    echo "npm installation failed"
+    echo "npm is required. Compose t3code with the node feature using installNpm=true."
     exit 1
 fi
 
