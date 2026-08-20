@@ -5,6 +5,7 @@
 - When `pnpm` is used, the installer configures `global-bin-dir` as `/usr/local/bin` and `global-dir` as `/usr/local/share/pnpm/global` before installing Pi.
 - If `node` is already installed, the feature does not install another Node.js version. If Node tooling must be installed, `nodeVersion` selects the `nodejs-<version>` package.
 - The feature bind-mounts `${localEnv:TEMP:/tmp}/pi` to `/tmp/pi-host-tmp`.
+- To copy shared cross-harness skills from `~/.agents/skills`, compose this feature with the `agent-skills` feature. `copySkills` only copies Pi-specific skills from `~/.pi/agent/skills`.
 - Use the host scripts in `src/pi/host/pi-agent-copy` (POSIX) and `src/pi/host/pi-agent-copy.cmd` (Windows). Call the shared base name `pi-agent-copy` from `initializeCommand` so each OS resolves the right script.
 - The host helper stages supported entries from `${PI_CODING_AGENT_DIR}` when set, otherwise from `~/.pi/agent`, into `${TEMP:-/tmp}/pi/agent`. It creates the temp directory and exits successfully with a warning when Pi is not configured on the host.
 - The container startup hook copies selected entries into `${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}` for the container running user.

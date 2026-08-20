@@ -20,6 +20,14 @@ _Avoid_: Remote user, target user, container user
 The user-level Pi configuration directory at `~/.pi/agent` containing Pi settings, credentials, customizations, and installed Pi packages. In this repository's Pi feature discussions, `.pi/agent` means `~/.pi/agent` unless explicitly described as project-local.
 _Avoid_: Pi config folder, Pi home
 
+**Shared agent skills directory**:
+The user-level shared agent skills directory at `~/.agents/skills`. It is preserved as its own directory in containers, separate from the Pi agent directory, because it is a cross-harness standard reused by tools such as Pi and opencode. Claude Code does not use this standard.
+_Avoid_: Pi skills folder, shared Pi skills
+
+**Workspace service state**:
+A host-mounted per-workspace directory that persists sensitive runtime state for tools started by a Feature, such as Tailscale node identity and T3 Code server settings.
+_Avoid_: Shared cache, Global state
+
 ## Example dialogue
 
 Developer: Should the Pi feature copy the whole Pi agent directory into the container running user's home?

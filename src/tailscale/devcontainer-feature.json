@@ -1,0 +1,54 @@
+{
+    "name": "tailscale",
+    "id": "tailscale",
+    "version": "1.0.0",
+    "description": "Installs Tailscale on Wolfi base images and optionally starts a userspace daemon for DevPod workspaces.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/tailscale",
+    "options": {
+        "autoStart": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to start tailscaled from the feature postStartCommand."
+        },
+        "stateDir": {
+            "type": "string",
+            "default": "/persist/devpod-t3/tailscale",
+            "description": "Directory for Tailscale socket, logs, pid, and state file. Mount this from the host to persist the node identity."
+        },
+        "authKeyEnvVar": {
+            "type": "string",
+            "default": "TS_AUTHKEY",
+            "description": "Runtime environment variable containing the Tailscale auth key used for first enrollment."
+        },
+        "hostname": {
+            "type": "string",
+            "default": "",
+            "description": "Optional Tailscale hostname to use during first enrollment."
+        },
+        "advertiseTags": {
+            "type": "string",
+            "default": "",
+            "description": "Optional comma-separated tags to advertise during first enrollment, for example tag:devpod-t3."
+        },
+        "tunMode": {
+            "type": "string",
+            "enum": [
+                "userspace-networking",
+                "auto"
+            ],
+            "default": "userspace-networking",
+            "description": "Tailscaled --tun mode. Use userspace-networking for unprivileged DevPod containers."
+        },
+        "serveTarget": {
+            "type": "string",
+            "default": "",
+            "description": "Optional local HTTP target to expose with Tailscale Serve, for example http://127.0.0.1:3773."
+        },
+        "serveHttpsPort": {
+            "type": "string",
+            "default": "443",
+            "description": "HTTPS port registered with Tailscale Serve when serveTarget is set."
+        }
+    },
+    "postStartCommand": "/usr/local/share/tailscale-devpod-start.sh"
+}

@@ -90,6 +90,19 @@ ensure_pnpm() {
         apk add --no-cache pnpm
     fi
 
+    if ! command -v pnpm >/dev/null 2>&1; then
+        echo "pnpm installation failed"
+        exit 1
+    fi
+
+    mkdir -p /etc/profile.d
+    cat <<'PNPM_PROFILE_EOF' > /etc/profile.d/pnpm.sh
+export PNPM_HOME="/usr/local"
+export PATH="${PNPM_HOME}/bin:${PATH}"
+PNPM_PROFILE_EOF
+
+    export PNPM_HOME="/usr/local"
+    export PATH="${PNPM_HOME}/bin:${PATH}"
     pnpm config set --global global-bin-dir /usr/local/bin
     pnpm config set --global global-dir /usr/local/share/pnpm/global
 }

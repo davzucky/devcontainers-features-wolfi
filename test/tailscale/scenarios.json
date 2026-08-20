@@ -1,0 +1,22 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "tailscale": {}
+        }
+    },
+    "configured_autostart": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "tailscale": {
+                "autoStart": true,
+                "stateDir": "/tmp/devpod-t3/tailscale",
+                "hostname": "t3-hawk",
+                "advertiseTags": "tag:devpod-t3",
+                "serveTarget": "http://127.0.0.1:3773"
+            }
+        }
+    }
+}

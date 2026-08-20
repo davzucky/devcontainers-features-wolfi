@@ -1,0 +1,16 @@
+{
+    "name": "agent-skills",
+    "id": "agent-skills",
+    "version": "1.0.0",
+    "description": "Copies shared agent skills into the container running user's home.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/agent-skills",
+    "options": {},
+    "mounts": [
+        {
+            "source": "${localEnv:TEMP:/tmp}/agent-skills",
+            "target": "/tmp/agent-skills-host-tmp",
+            "type": "bind"
+        }
+    ],
+    "postStartCommand": "/usr/local/share/agent-skills-copy.sh"
+}
