@@ -1,9 +1,9 @@
 ## Usage notes
 
-- `version` supports `latest` or an explicit npm package version (with or without a leading `v`).
-- `packageManager=automatic` prefers an existing `pnpm`, then an existing `npm`, then installs `npm`. `auto` is accepted as a backward-compatible alias.
-- When `pnpm` is used, the installer configures `global-bin-dir` as `/usr/local/bin` and `global-dir` as `/usr/local/share/pnpm/global` before installing Pi.
-- If `node` is already installed, the feature does not install another Node.js version. If Node tooling must be installed, `nodeVersion` selects the `nodejs-<version>` package.
+- Version 2 uses the `mise:1` feature. `version` defaults to `latest`; explicit pins remain supported.
+- Commands resolve through mise shims. Trusted workspace `mise.toml` files can override the image's default version; run `mise install` as the container running user to install missing versions.
+- Pi uses mise's native distribution. The feature also depends on the apk-backed `node:1` feature with Node 24 and npm for Pi package installation.
+- Version 2 removes `packageManager` and `nodeVersion`; configure Node through the `node` feature when needed.
 - The feature bind-mounts `${localEnv:TEMP:/tmp}/pi` to `/tmp/pi-host-tmp`.
 - To copy shared cross-harness skills from `~/.agents/skills`, compose this feature with the `agent-skills` feature. `copySkills` only copies Pi-specific skills from `~/.pi/agent/skills`.
 - Use the host scripts in `src/pi/host/pi-agent-copy` (POSIX) and `src/pi/host/pi-agent-copy.cmd` (Windows). Call the shared base name `pi-agent-copy` from `initializeCommand` so each OS resolves the right script.

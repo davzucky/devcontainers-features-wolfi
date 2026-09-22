@@ -3,6 +3,8 @@ set -e
 
 source dev-container-features-test-lib
 
+check "mise on PATH" mise --version
+
 check "node installed" node --version
 check "npm installed" npm --version
 check "t3 installed" t3 --version

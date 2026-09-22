@@ -1,0 +1,35 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "mise": {}
+        }
+    },
+    "pinned": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "mise": {
+                "version": "2026.9.10"
+            }
+        }
+    },
+    "harnesses": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": "mkdir -p /tmp/claude /tmp/cursor /tmp/opencode /tmp/pi",
+        "features": {
+            "bash": {},
+            "mise": {},
+            "node": {
+                "nodeVersion": "24",
+                "installNpm": true
+            },
+            "claude": {},
+            "cursor": {},
+            "opencode": {},
+            "pi": {},
+            "t3code": {}
+        }
+    }
+}

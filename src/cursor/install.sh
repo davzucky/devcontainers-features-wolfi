@@ -4,92 +4,32 @@ set -e
 VERSION=${VERSION:-"latest"}
 COPY_AUTH=${COPYAUTH:-"false"}
 
-# Checks if packages are installed and installs them if not
-install_if_not() {
-    if [ -z "$(apk list -I "$@")" ]; then
-        echo "Install package $@"
-        apk add --no-cache "$@"
-    fi
-}
+apk update
+apk add --no-cache ca-certificates bash libgcc libstdc++
 
-ARCH=$(uname -m)
-ARCH_SUFFIX=""
+# Expose only Cursor commands, keeping its bundled Node off PATH.
+# A backend alias also applies these options to project-selected versions.
+cat > /etc/mise/conf.d/cursor.toml <<'EOF'
+[tool_alias]
+cursor-agent = '''http:cursor-agent[bin_path=bin,postinstall='mkdir -p "$MISE_TOOL_INSTALL_PATH/bin" && ln -sf ../dist-package/cursor-agent "$MISE_TOOL_INSTALL_PATH/bin/cursor-agent" && ln -sf ../dist-package/cursor-agent "$MISE_TOOL_INSTALL_PATH/bin/agent"']'''
+EOF
 
-case "${ARCH}" in
-    x86_64|amd64)
-        ARCH_SUFFIX="x64"
-        ;;
-    aarch64|arm64)
-        ARCH_SUFFIX="arm64"
-        ;;
-    *)
-        echo "Unsupported architecture: ${ARCH}"
+RESOLVED_VERSION=${VERSION#v}
+if [ "${RESOLVED_VERSION}" = "latest" ]; then
+    RESOLVED_VERSION=$(mise latest cursor-agent)
+fi
+case "${RESOLVED_VERSION}" in
+    ''|*[!a-zA-Z0-9.+-]*)
+        echo "Unsupported cursor-agent version: ${VERSION}"
         exit 1
         ;;
 esac
-
-VERSION_TAG="2026.01.28-fd13201"
-if [ "${VERSION}" != "latest" ]; then
-    VERSION_TAG="${VERSION}"
-fi
-
-apk update
-install_if_not ca-certificates
-install_if_not curl
-install_if_not libgcc
-install_if_not libstdc++
-
-INSTALL_DIR="/usr/local/lib/cursor-agent"
-VERSION_FILE="${INSTALL_DIR}/VERSION"
-
-if [ -f "${VERSION_FILE}" ]; then
-    INSTALLED_VERSION=$(cat "${VERSION_FILE}")
-    if [ "${INSTALLED_VERSION}" = "${VERSION_TAG}" ] \
-        && [ -x "${INSTALL_DIR}/cursor-agent" ] \
-        && [ -x "/usr/local/bin/agent" ] \
-        && [ -x "/usr/local/bin/cursor-agent" ]; then
-        echo "Cursor Agent already installed (${INSTALLED_VERSION}), skipping"
-        exit 0
-    fi
-fi
-
-DOWNLOAD_URL="https://downloads.cursor.com/lab/${VERSION_TAG}/linux/${ARCH_SUFFIX}/agent-cli-package.tar.gz"
-
-WORKDIR=$(mktemp -d)
-trap "rm -rf '${WORKDIR}'" EXIT
-
-echo "Downloading Cursor Agent from ${DOWNLOAD_URL}"
-if ! curl -fSL "${DOWNLOAD_URL}" -o "${WORKDIR}/agent-cli-package.tar.gz"; then
-    echo "Failed to download Cursor Agent package"
-    exit 1
-fi
-
-mkdir -p "${WORKDIR}/extract"
-if ! tar --strip-components=1 -xzf "${WORKDIR}/agent-cli-package.tar.gz" -C "${WORKDIR}/extract"; then
-    echo "Failed to extract Cursor Agent package"
-    exit 1
-fi
-
-if [ ! -f "${WORKDIR}/extract/cursor-agent" ]; then
-    echo "Cursor Agent binary not found in archive"
-    exit 1
-fi
-
-rm -rf "${INSTALL_DIR}"
-mkdir -p "${INSTALL_DIR}"
-cp -R "${WORKDIR}/extract"/. "${INSTALL_DIR}/"
-printf "%s" "${VERSION_TAG}" > "${VERSION_FILE}"
-
-mkdir -p /usr/local/bin
-ln -sf "${INSTALL_DIR}/cursor-agent" /usr/local/bin/agent
-ln -sf "${INSTALL_DIR}/cursor-agent" /usr/local/bin/cursor-agent
-
-if ! command -v agent >/dev/null 2>&1; then
-    echo "Cursor Agent installation failed"
-    exit 1
-fi
-
-echo "Cursor Agent installed successfully"
+printf '\n[tools]\ncursor-agent = "%s"\n' "${RESOLVED_VERSION}" >> /etc/mise/conf.d/cursor.toml
+mise install --system cursor-agent
+mise reshim --system
+export PATH="/usr/local/share/mise/shims:${PATH}"
+command -v cursor-agent
+cursor-agent --version
 
 echo "Installing Cursor auth copy hook"
 mkdir -p /usr/local/share

@@ -1,0 +1,17 @@
+{
+    "name": "mise",
+    "id": "mise",
+    "version": "1.0.0",
+    "description": "Installs mise with shared tool defaults and project-aware shims on Wolfi base images.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/mise",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "The mise release to install: latest or an explicit release version."
+        }
+    },
+    "containerEnv": {
+        "PATH": "/usr/local/share/mise/shims:/usr/local/bin:${PATH}"
+    }
+}

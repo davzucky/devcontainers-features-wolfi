@@ -4,6 +4,8 @@ set -e
 
 source dev-container-features-test-lib
 
+check "mise on PATH" mise --version
+
 check "claude installed" claude --version
 check "settings copy flag missing" test ! -f /usr/local/share/claude-copysettings.flag
 

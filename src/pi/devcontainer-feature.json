@@ -1,7 +1,7 @@
 {
     "name": "pi",
     "id": "pi",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Installs Pi coding agent on Wolfi base images and optionally copies selected Pi agent configuration into the container running user's home.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/pi",
     "options": {
@@ -9,30 +9,6 @@
             "type": "string",
             "default": "latest",
             "description": "Select the Pi coding agent version to install."
-        },
-        "packageManager": {
-            "type": "string",
-            "enum": [
-                "automatic",
-                "auto",
-                "npm",
-                "pnpm"
-            ],
-            "default": "automatic",
-            "description": "Package manager to use when installing Pi. Automatic prefers existing pnpm, then existing npm, then installs npm."
-        },
-        "nodeVersion": {
-            "type": "string",
-            "enum": [
-                "26",
-                "25",
-                "24",
-                "22",
-                "20",
-                "18"
-            ],
-            "default": "26",
-            "description": "Node.js version to install when Pi installation requires adding Node tooling. Existing node installations are reused."
         },
         "copySettings": {
             "type": "boolean",
@@ -92,5 +68,12 @@
             "type": "bind"
         }
     ],
-    "postStartCommand": "/usr/local/share/pi-agent-copy.sh"
+    "postStartCommand": "/usr/local/share/pi-agent-copy.sh",
+    "dependsOn": {
+        "ghcr.io/davzucky/devcontainers-features-wolfi/mise:1": {},
+        "ghcr.io/davzucky/devcontainers-features-wolfi/node:1": {
+            "nodeVersion": "24",
+            "installNpm": true
+        }
+    }
 }

@@ -7,7 +7,7 @@ Installs Pi coding agent on Wolfi base images and optionally copies selected Pi 
 
 ```json
 "features": {
-    "ghcr.io/davzucky/devcontainers-features-wolfi/pi:1": {}
+    "ghcr.io/davzucky/devcontainers-features-wolfi/pi:2": {}
 }
 ```
 
@@ -16,8 +16,6 @@ Installs Pi coding agent on Wolfi base images and optionally copies selected Pi 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
 | version | Select the Pi coding agent version to install. | string | latest |
-| packageManager | Package manager to use when installing Pi. Automatic prefers existing pnpm, then existing npm, then installs npm. | string | automatic |
-| nodeVersion | Node.js version to install when Pi installation requires adding Node tooling. Existing node installations are reused. | string | 26 |
 | copySettings | Whether to copy Pi settings.json from the host into the container. | boolean | false |
 | copyAuth | Whether to copy Pi auth.json from the host into the container. | boolean | false |
 | copyModels | Whether to copy Pi models.json from the host into the container. | boolean | false |
@@ -31,10 +29,10 @@ Installs Pi coding agent on Wolfi base images and optionally copies selected Pi 
 
 ## Usage notes
 
-- `version` supports `latest` or an explicit npm package version (with or without a leading `v`).
-- `packageManager=automatic` prefers an existing `pnpm`, then an existing `npm`, then installs `npm`. `auto` is accepted as a backward-compatible alias.
-- When `pnpm` is used, the installer configures `global-bin-dir` as `/usr/local/bin` and `global-dir` as `/usr/local/share/pnpm/global` before installing Pi.
-- If `node` is already installed, the feature does not install another Node.js version. If Node tooling must be installed, `nodeVersion` selects the `nodejs-<version>` package.
+- Version 2 uses the `mise:1` feature. `version` defaults to `latest`; explicit pins remain supported.
+- Commands resolve through mise shims. Trusted workspace `mise.toml` files can override the image's default version; run `mise install` as the container running user to install missing versions.
+- Pi uses mise's native distribution. The feature also depends on the apk-backed `node:1` feature with Node 24 and npm for Pi package installation.
+- Version 2 removes `packageManager` and `nodeVersion`; configure Node through the `node` feature when needed.
 - The feature bind-mounts `${localEnv:TEMP:/tmp}/pi` to `/tmp/pi-host-tmp`.
 - To copy shared cross-harness skills from `~/.agents/skills`, compose this feature with the `agent-skills` feature. `copySkills` only copies Pi-specific skills from `~/.pi/agent/skills`.
 - Use the host scripts in `src/pi/host/pi-agent-copy` (POSIX) and `src/pi/host/pi-agent-copy.cmd` (Windows). Call the shared base name `pi-agent-copy` from `initializeCommand` so each OS resolves the right script.

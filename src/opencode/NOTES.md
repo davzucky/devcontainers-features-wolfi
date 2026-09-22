@@ -1,5 +1,7 @@
 ## Usage notes
 
+- Version 2 uses the `mise:1` feature. `version` defaults to `latest`; explicit pins remain supported.
+- Commands resolve through mise shims. Trusted workspace `mise.toml` files can override the image's default version; run `mise install` as the container running user to install missing versions.
 - `version` supports `latest` (resolved from the GitHub releases latest tag) or an explicit version (with or without a leading `v`).
 - The installer ensures `ripgrep` (`rg`) is present because `opencode` requires it.
 - `copyAuth` enables a startup hook that copies `/tmp/opencode-host-tmp/auth.json` into `$HOME/.local/share/opencode/auth.json`.

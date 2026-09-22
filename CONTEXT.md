@@ -8,6 +8,10 @@ This context describes the product language for Wolfi-compatible DevContainer fe
 A reusable DevContainer capability that installs tooling and optionally prepares user-specific files inside a container.
 _Avoid_: Plugin, package
 
+**Coding harness**:
+An AI coding tool provided by this repository: Claude Code, Cursor Agent, opencode, Pi, or T3 Code. Language runtimes such as Node.js and Python are not coding harnesses.
+_Avoid_: Runtime, test harness
+
 **Host staging directory**:
 A temporary host directory used to make selected host files available to a container during startup.
 _Avoid_: Shared folder, temp copy
