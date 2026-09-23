@@ -9,7 +9,7 @@ A reusable DevContainer capability that installs tooling and optionally prepares
 _Avoid_: Plugin, package
 
 **Coding harness**:
-An AI coding tool provided by this repository: Claude Code, Cursor Agent, opencode, Pi, or T3 Code. Language runtimes such as Node.js and Python are not coding harnesses.
+An AI coding tool provided by this repository: Claude Code, Codex, Cursor Agent, opencode, Pi, or T3 Code. Language runtimes such as Node.js and Python are not coding harnesses.
 _Avoid_: Runtime, test harness
 
 **Host staging directory**:

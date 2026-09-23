@@ -1,0 +1,17 @@
+{
+    "name": "codex",
+    "id": "codex",
+    "version": "1.0.0",
+    "description": "Installs OpenAI Codex CLI through mise on Wolfi base images.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/codex",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "Select the Codex CLI version to install."
+        }
+    },
+    "dependsOn": {
+        "ghcr.io/davzucky/devcontainers-features-wolfi/mise:1": {}
+    }
+}

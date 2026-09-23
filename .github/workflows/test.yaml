@@ -38,6 +38,7 @@ jobs:
           - docker-in-docker
           - docker-outside-of-docker
           - claude
+          - codex
           - cursor
           - git-user-profile
           - gh

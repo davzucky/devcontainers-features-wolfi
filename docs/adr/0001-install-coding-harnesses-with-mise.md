@@ -9,3 +9,5 @@ Default mise and harness versions to `latest`, resolved when the installer runs 
 Remove Pi's `packageManager` and `nodeVersion` feature options. Delegate harness installation to mise; any required Node.js or Python dependencies still come from apk.
 
 The container running user can install additional project-selected versions with `mise install` into their own mise directory, without root. Keep mise's normal trust checks and do not add startup hooks that download tools automatically.
+
+Add Codex as a new `1.0.0` feature using the same mise installation and project-override behavior. It uses the native Codex distribution without a Node.js dependency.

@@ -10,7 +10,7 @@ check "no bundled Node shim" test ! -e /usr/local/share/mise/shims/node
 adduser -D harness-test
 check "all harnesses available without root" su harness-test -s /bin/sh -c '
     set -e
-    for command in mise claude agent cursor-agent opencode pi t3; do
+    for command in mise claude codex agent cursor-agent opencode pi t3; do
         "$command" --version
     done
 '
