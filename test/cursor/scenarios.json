@@ -20,5 +20,17 @@
                 "copyAuth": true
             }
         }
+    },
+    "pinned": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/cursor || true"
+        },
+        "features": {
+            "bash": {},
+            "cursor": {
+                "version": "2026.01.28-fd13201"
+            }
+        }
     }
 }

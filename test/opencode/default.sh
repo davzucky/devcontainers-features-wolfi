@@ -4,6 +4,8 @@ set -e
 
 source dev-container-features-test-lib
 
+check "mise on PATH" mise --version
+
 check "opencode installed" opencode --version
 check "ripgrep installed" rg --version
 check "auth copy flag missing" test ! -f /usr/local/share/opencode-copyauth.flag

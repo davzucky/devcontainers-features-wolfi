@@ -2,8 +2,6 @@
 set -e
 
 VERSION=${VERSION:-"latest"}
-PACKAGE_MANAGER=${PACKAGEMANAGER:-"automatic"}
-NODE_VERSION=${NODEVERSION:-"26"}
 COPY_SETTINGS=${COPYSETTINGS:-"false"}
 COPY_AUTH=${COPYAUTH:-"false"}
 COPY_MODELS=${COPYMODELS:-"false"}
@@ -39,121 +37,15 @@ validate_boolean COPY_EXTENSIONS "${COPY_EXTENSIONS}"
 validate_boolean COPY_THEMES "${COPY_THEMES}"
 validate_boolean COPY_ALL "${COPY_ALL}"
 
-case "${PACKAGE_MANAGER}" in
-    automatic|auto|npm|pnpm)
-        ;;
-    *)
-        echo "Unsupported package manager: ${PACKAGE_MANAGER}"
-        exit 1
-        ;;
-esac
-
-case "${NODE_VERSION}" in
-    26|25|24|22|20|18)
-        ;;
-    *)
-        echo "Unsupported Node.js version: ${NODE_VERSION}"
-        exit 1
-        ;;
-esac
-
 apk update
-apk add --no-cache ca-certificates
+apk add --no-cache ca-certificates libgcc libstdc++
 
-install_node_if_missing() {
-    if command -v node >/dev/null 2>&1; then
-        echo "node already installed, skipping Node.js package install"
-        return
-    fi
-
-    echo "Installing Node.js ${NODE_VERSION}"
-    apk add --no-cache "nodejs-${NODE_VERSION}"
-}
-
-ensure_npm() {
-    if command -v npm >/dev/null 2>&1; then
-        echo "npm already installed"
-        return
-    fi
-
-    install_node_if_missing
-    echo "Installing npm"
-    apk add --no-cache npm
-}
-
-ensure_pnpm() {
-    if command -v pnpm >/dev/null 2>&1; then
-        echo "pnpm already installed"
-    else
-        install_node_if_missing
-        echo "Installing pnpm"
-        apk add --no-cache pnpm
-    fi
-
-    if ! command -v pnpm >/dev/null 2>&1; then
-        echo "pnpm installation failed"
-        exit 1
-    fi
-
-    mkdir -p /etc/profile.d
-    cat <<'PNPM_PROFILE_EOF' > /etc/profile.d/pnpm.sh
-export PNPM_HOME="/usr/local"
-export PATH="${PNPM_HOME}/bin:${PATH}"
-PNPM_PROFILE_EOF
-
-    export PNPM_HOME="/usr/local"
-    export PATH="${PNPM_HOME}/bin:${PATH}"
-    pnpm config set --global global-bin-dir /usr/local/bin
-    pnpm config set --global global-dir /usr/local/share/pnpm/global
-}
-
-SELECTED_PACKAGE_MANAGER="${PACKAGE_MANAGER}"
-if [ "${SELECTED_PACKAGE_MANAGER}" = "automatic" ] || [ "${SELECTED_PACKAGE_MANAGER}" = "auto" ]; then
-    if command -v pnpm >/dev/null 2>&1; then
-        SELECTED_PACKAGE_MANAGER="pnpm"
-    elif command -v npm >/dev/null 2>&1; then
-        SELECTED_PACKAGE_MANAGER="npm"
-    else
-        SELECTED_PACKAGE_MANAGER="npm"
-    fi
-fi
-
-PI_INSTALLED="false"
-if command -v pi >/dev/null 2>&1; then
-    echo "pi already installed, skipping package install"
-    PI_INSTALLED="true"
-fi
-
-if [ "${PI_INSTALLED}" = "false" ]; then
-    VERSION_TARGET="${VERSION}"
-    case "${VERSION_TARGET}" in
-        v*)
-            VERSION_TARGET=${VERSION_TARGET#v}
-            ;;
-    esac
-
-    PACKAGE_SPEC="@earendil-works/pi-coding-agent@${VERSION_TARGET}"
-
-    if [ "${SELECTED_PACKAGE_MANAGER}" = "pnpm" ]; then
-        ensure_pnpm
-        echo "Installing Pi with pnpm (${VERSION_TARGET})"
-        pnpm add -g --ignore-scripts "${PACKAGE_SPEC}"
-    else
-        ensure_npm
-        echo "Installing Pi with npm (${VERSION_TARGET})"
-        npm install -g --ignore-scripts "${PACKAGE_SPEC}"
-    fi
-fi
-
-if ! command -v pi >/dev/null 2>&1; then
-    echo "pi installation failed"
-    exit 1
-fi
-
-if ! pi --version >/dev/null 2>&1; then
-    echo "pi installation verification failed"
-    exit 1
-fi
+mise install --system "pi@${VERSION#v}"
+mise use --pin --path /etc/mise/conf.d/pi.toml "pi@${VERSION#v}"
+mise reshim --system
+export PATH="/usr/local/share/mise/shims:${PATH}"
+command -v pi
+pi --version
 
 mkdir -p /usr/local/share
 

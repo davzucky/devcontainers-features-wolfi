@@ -20,5 +20,17 @@
                 "copySettings": true
             }
         }
+    },
+    "pinned": {
+        "image": "chainguard/wolfi-base:latest",
+        "initializeCommand": {
+            "mkdir-posix": "mkdir -p ${TEMP:-/tmp}/claude || true"
+        },
+        "features": {
+            "bash": {},
+            "claude": {
+                "version": "2.1.2"
+            }
+        }
     }
 }

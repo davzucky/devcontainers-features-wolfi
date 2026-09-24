@@ -1,7 +1,7 @@
 {
     "name": "claude",
     "id": "claude",
-    "version": "1.0.3",
+    "version": "2.0.0",
     "description": "Installs Claude Code CLI on Wolfi base images.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/claude",
     "options": {
@@ -23,5 +23,8 @@
             "type": "bind"
         }
     ],
-    "postStartCommand": "/usr/local/share/claude-settings-copy.sh"
+    "postStartCommand": "/usr/local/share/claude-settings-copy.sh",
+    "dependsOn": {
+        "ghcr.io/davzucky/devcontainers-features-wolfi/mise:1": {}
+    }
 }

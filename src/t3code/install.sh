@@ -43,29 +43,28 @@ if ! command -v npm >/dev/null 2>&1; then
     exit 1
 fi
 
-T3CODE_INSTALLED="false"
-if command -v t3 >/dev/null 2>&1; then
-    echo "t3 already installed, skipping package install"
-    T3CODE_INSTALLED="true"
-fi
+# Keep build approvals when a workspace selects another T3 version.
+cat > /etc/mise/conf.d/t3code.toml <<'EOF'
+[tool_alias]
+t3 = 'npm:t3[allow_builds=["node-pty","msgpackr-extract"]]'
+EOF
 
-if [ "${T3CODE_INSTALLED}" = "false" ]; then
-    VERSION_TARGET="${VERSION}"
-    case "${VERSION_TARGET}" in
-        v*)
-            VERSION_TARGET=${VERSION_TARGET#v}
-            ;;
-    esac
-
-    PACKAGE_SPEC="t3@${VERSION_TARGET}"
-    echo "Installing T3 Code CLI from ${PACKAGE_SPEC}"
-    npm install -g --allow-scripts=node-pty,msgpackr-extract "${PACKAGE_SPEC}"
+RESOLVED_VERSION=${VERSION#v}
+if [ "${RESOLVED_VERSION}" = "latest" ]; then
+    RESOLVED_VERSION=$(mise latest t3)
 fi
-
-if ! command -v t3 >/dev/null 2>&1; then
-    echo "t3 installation failed"
-    exit 1
-fi
+case "${RESOLVED_VERSION}" in
+    ''|*[!a-zA-Z0-9.+-]*)
+        echo "Unsupported t3 version: ${VERSION}"
+        exit 1
+        ;;
+esac
+printf '\n[tools]\nt3 = "%s"\n' "${RESOLVED_VERSION}" >> /etc/mise/conf.d/t3code.toml
+MISE_NPM_PACKAGE_MANAGER=npm mise install --system t3
+mise reshim --system
+export PATH="/usr/local/share/mise/shims:${PATH}"
+command -v t3
+t3 --version
 
 mkdir -p /usr/local/share
 

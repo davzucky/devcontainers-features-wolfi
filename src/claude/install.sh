@@ -4,95 +4,38 @@ set -e
 VERSION=${VERSION:-"latest"}
 COPY_SETTINGS=${COPYSETTINGS:-"false"}
 
-ARCH=$(uname -m)
-PLATFORM=""
-
-case "${ARCH}" in
-    x86_64|amd64)
-        PLATFORM="linux-x64"
-        ;;
-    aarch64|arm64)
-        PLATFORM="linux-arm64"
-        ;;
-    *)
-        echo "Unsupported architecture: ${ARCH}"
-        exit 1
-        ;;
-esac
-
 apk update
 apk add --no-cache ca-certificates curl libgcc libstdc++ ripgrep
 
-BASE_URL="https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases"
+if [ "${VERSION}" = "stable" ]; then
+    VERSION=$(curl -fsSL https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/stable)
+    if [ -z "${VERSION}" ]; then
+        echo "Failed to resolve stable Claude Code version"
+        exit 1
+    fi
+fi
 
-VERSION_TARGET="${VERSION}"
-case "${VERSION}" in
-    latest|stable)
-        VERSION_TARGET=$(curl -fsSL "${BASE_URL}/${VERSION}")
-        if [ -z "${VERSION_TARGET}" ]; then
-            echo "Failed to resolve ${VERSION} Claude Code version"
-            exit 1
-        fi
-        ;;
-    v*)
-        VERSION_TARGET=${VERSION#v}
+# The HTTP backend verifies upstream manifest checksums for older releases too.
+cat > /etc/mise/conf.d/claude.toml <<'EOF'
+[tool_alias]
+claude = "http:claude"
+EOF
+RESOLVED_VERSION=${VERSION#v}
+if [ "${RESOLVED_VERSION}" = "latest" ]; then
+    RESOLVED_VERSION=$(mise latest claude)
+fi
+case "${RESOLVED_VERSION}" in
+    ''|*[!a-zA-Z0-9.+-]*)
+        echo "Unsupported Claude Code version: ${VERSION}"
+        exit 1
         ;;
 esac
-
-CLAUDE_INSTALLED="false"
-if command -v claude >/dev/null 2>&1; then
-    CURRENT_VERSION=$(claude --version 2>/dev/null | awk '{print $NF}')
-    if [ "${VERSION}" != "latest" ] && [ "${VERSION}" != "stable" ] && [ "${CURRENT_VERSION}" = "${VERSION_TARGET}" ]; then
-        echo "claude already installed (${CURRENT_VERSION}), skipping"
-        CLAUDE_INSTALLED="true"
-    fi
-fi
-
-if [ "${CLAUDE_INSTALLED}" = "false" ]; then
-    MANIFEST_JSON=$(curl -fsSL "${BASE_URL}/${VERSION_TARGET}/manifest.json")
-    if [ -z "${MANIFEST_JSON}" ]; then
-        echo "Failed to download Claude Code manifest"
-        exit 1
-    fi
-
-    CHECKSUM=$(printf "%s" "${MANIFEST_JSON}" | awk -v platform="\"${PLATFORM}\"" '
-        $0 ~ platform {found=1}
-        found && $0 ~ /"checksum"/ {
-            gsub(/.*"checksum"[[:space:]]*:[[:space:]]*"/, "")
-            gsub(/".*/, "")
-            print
-            exit
-        }
-    ')
-
-    if [ -z "${CHECKSUM}" ]; then
-        echo "Failed to locate checksum for ${PLATFORM}"
-        exit 1
-    fi
-
-    WORKDIR=$(mktemp -d)
-    trap "rm -rf '${WORKDIR}'" EXIT
-
-    DOWNLOAD_URL="${BASE_URL}/${VERSION_TARGET}/${PLATFORM}/claude"
-    if ! curl -fsSL "${DOWNLOAD_URL}" -o "${WORKDIR}/claude"; then
-        echo "Failed to download Claude Code from ${DOWNLOAD_URL}"
-        exit 1
-    fi
-
-    ACTUAL_CHECKSUM=$(sha256sum "${WORKDIR}/claude" | awk '{print $1}')
-    if [ "${ACTUAL_CHECKSUM}" != "${CHECKSUM}" ]; then
-        echo "Checksum verification failed"
-        exit 1
-    fi
-
-    mkdir -p /usr/local/bin
-    install -m 0755 "${WORKDIR}/claude" /usr/local/bin/claude
-fi
-
-if ! command -v claude >/dev/null 2>&1; then
-    echo "claude installation failed"
-    exit 1
-fi
+printf '\n[tools]\nclaude = "%s"\n' "${RESOLVED_VERSION}" >> /etc/mise/conf.d/claude.toml
+mise install --system claude
+mise reshim --system
+export PATH="/usr/local/share/mise/shims:${PATH}"
+command -v claude
+claude --version
 
 echo "Installing Claude Code settings copy hook"
 mkdir -p /usr/local/share

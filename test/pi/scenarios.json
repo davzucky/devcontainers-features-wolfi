@@ -20,17 +20,5 @@
                 "copyAll": true
             }
         }
-    },
-    "with_pnpm": {
-        "image": "chainguard/wolfi-base:latest",
-        "initializeCommand": {
-            "mkdir-posix": "mkdir -p /tmp/pi || true"
-        },
-        "features": {
-            "bash": {},
-            "pi": {
-                "packageManager": "pnpm"
-            }
-        }
     }
 }

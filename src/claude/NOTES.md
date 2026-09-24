@@ -1,5 +1,8 @@
 ## Usage notes
 
+- Version 2 uses the `mise:1` feature. `version` defaults to `latest`; explicit pins remain supported.
+- Commands resolve through mise shims. Trusted workspace `mise.toml` files can override the image's default version; run `mise install` as the container running user to install missing versions.
+- The mise HTTP backend verifies each release against its upstream manifest checksum, including older pinned versions.
 - `version` supports `latest`, `stable`, or an explicit version (with or without a leading `v`).
 - `copySettings` enables a startup hook that copies `/tmp/claude-host-tmp/settings.json` into `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json`.
 - The feature bind-mounts `${localEnv:TEMP:/tmp}/claude` to `/tmp/claude-host-tmp`.

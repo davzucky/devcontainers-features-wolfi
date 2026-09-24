@@ -1,0 +1,18 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "codex": {}
+        }
+    },
+    "pinned": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "codex": {
+                "version": "v0.154.0"
+            }
+        }
+    }
+}
