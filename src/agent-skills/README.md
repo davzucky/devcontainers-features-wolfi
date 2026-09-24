@@ -13,7 +13,9 @@ Copies shared agent skills into the container running user's home.
 
 ## Options
 
-This feature has no options.
+| Options Id | Description | Type | Default Value |
+|-----|-----|-----|-----|
+
 
 ## Usage notes
 
