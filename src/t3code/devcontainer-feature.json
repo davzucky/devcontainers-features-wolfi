@@ -1,7 +1,7 @@
 {
     "name": "t3code",
     "id": "t3code",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Installs T3 Code CLI on Wolfi base images and optionally starts a persistent headless T3 server for DevPod workspaces.",
     "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/t3code",
     "options": {

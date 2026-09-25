@@ -31,7 +31,7 @@ case "${PORT}" in
 esac
 
 apk update
-apk add --no-cache ca-certificates curl build-base python-3.13
+apk add --no-cache ca-certificates curl libatomic
 
 if ! command -v node >/dev/null 2>&1; then
     echo "node is required. Compose t3code with the node feature."
