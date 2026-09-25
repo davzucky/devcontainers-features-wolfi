@@ -4,7 +4,7 @@
 - Commands resolve through mise shims. Trusted workspace `mise.toml` files can override the image's default version; run `mise install` as the container running user to install missing versions.
 - Project configuration can select another release with `t3 = "<version>"` under `[tools]`. The system alias uses `npm:t3` and preserves the native-build allowlist for project installs.
 - The feature depends on this repository's `node` feature with `nodeVersion=24` and `installNpm=true`; it does not install Node.js or npm itself.
-- The feature installs native build dependencies needed by T3 Code's `node-pty` dependency, then installs `npm:t3` through mise, allowing build scripts only for `node-pty` and `msgpackr-extract`.
+- The feature installs `libatomic` for T3 Code's prebuilt Linux binary, then installs `npm:t3` through mise. It does not install Python or a compiler toolchain. Older T3 releases that compile native dependencies require you to provide those build tools separately.
 - `autoStart=false` only installs the CLI and startup hook. Set `autoStart=true` or runtime `T3CODE_AUTO_START=true` to start the server at container startup.
 - Persist `baseDir` with a host bind mount. It contains T3 settings, pairing/session state, provider settings, logs, and may contain secrets.
 - `workspaceDir` should be a path inside the DevPod workspace container. If empty, the post-start working directory is used.
