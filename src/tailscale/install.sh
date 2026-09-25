@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 
+VERSION=${VERSION:-"latest"}
 AUTO_START=${AUTOSTART:-"false"}
 STATE_DIR=${STATEDIR:-"/persist/devpod-t3/tailscale"}
 AUTH_KEY_ENV_VAR=${AUTHKEYENVVAR:-"TS_AUTHKEY"}
@@ -9,6 +10,16 @@ ADVERTISE_TAGS=${ADVERTISETAGS:-""}
 TUN_MODE=${TUNMODE:-"userspace-networking"}
 SERVE_TARGET=${SERVETARGET:-""}
 SERVE_HTTPS_PORT=${SERVEHTTPSPORT:-"443"}
+
+case "${VERSION}" in
+    latest) ;;
+    *)
+        if ! printf '%s\n' "${VERSION}" | grep -Eq '^v?[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Unsupported Tailscale version: ${VERSION}"
+            exit 1
+        fi
+        ;;
+esac
 
 validate_boolean() {
     VARIABLE_NAME="$1"
@@ -42,7 +53,13 @@ case "${SERVE_HTTPS_PORT}" in
 esac
 
 apk update
-apk add --no-cache ca-certificates tailscale
+apk add --no-cache ca-certificates
+
+echo "Installing Tailscale with mise (${VERSION})"
+mise install --system "aqua:tailscale/tailscale@${VERSION#v}"
+mise use --pin --path /etc/mise/conf.d/tailscale.toml "aqua:tailscale/tailscale@${VERSION#v}"
+mise reshim --system
+export PATH="/usr/local/share/mise/shims:${PATH}"
 
 if ! command -v tailscale >/dev/null 2>&1; then
     echo "tailscale installation failed"

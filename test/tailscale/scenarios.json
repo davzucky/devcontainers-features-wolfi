@@ -6,6 +6,15 @@
             "tailscale": {}
         }
     },
+    "pinned": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "tailscale": {
+                "version": "v1.102.4"
+            }
+        }
+    },
     "configured_autostart": {
         "image": "chainguard/wolfi-base:latest",
         "features": {
