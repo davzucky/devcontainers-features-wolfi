@@ -59,4 +59,4 @@ Create the host mount directory before starting the workspace. Replace the examp
 
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/davzucky/devcontainers-features-wolfi/blob/main//tmp/tmpyew9fl9i/orca/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/davzucky/devcontainers-features-wolfi/blob/main/src/orca/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
