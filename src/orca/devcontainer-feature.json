@@ -1,0 +1,38 @@
+{
+    "name": "Orca ADE",
+    "id": "orca",
+    "version": "1.0.0",
+    "description": "Installs Orca ADE through mise on Wolfi base images and optionally starts a persistent headless Orca server for DevPod workspaces.",
+    "documentationURL": "https://github.com/davzucky/devcontainers-features-wolfi/tree/main/src/orca",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "Orca GitHub release to install: latest or an explicit release version."
+        },
+        "autoStart": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to start a headless Orca server from the feature postStartCommand."
+        },
+        "baseDir": {
+            "type": "string",
+            "default": "/persist/devpod-orca/orca",
+            "description": "Orca profile directory. Mount this from the host to persist server state."
+        },
+        "port": {
+            "type": "string",
+            "default": "6768",
+            "description": "Port for the Orca server to listen on."
+        },
+        "pairingAddress": {
+            "type": "string",
+            "default": "127.0.0.1",
+            "description": "Address advertised to paired clients. This does not change the server's bind address."
+        }
+    },
+    "postStartCommand": "/usr/local/share/orca-devpod-start.sh",
+    "dependsOn": {
+        "ghcr.io/davzucky/devcontainers-features-wolfi/mise:1": {}
+    }
+}

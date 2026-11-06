@@ -1,8 +1,9 @@
 ## Usage notes
 
 - Version 2 uses the `mise:1` feature. `version` defaults to `latest`; explicit pins remain supported.
+- The system alias pins `opencode` to mise's `aqua:anomalyco/opencode` backend for image and workspace installs. It downloads native binaries and requires no Node.js or npm.
 - Commands resolve through mise shims. Trusted workspace `mise.toml` files can override the image's default version; run `mise install` as the container running user to install missing versions.
-- `version` supports `latest` (resolved from the GitHub releases latest tag) or an explicit version (with or without a leading `v`).
+- `version` supports `latest`, resolved by mise, or an explicit version with or without a leading `v`.
 - The installer ensures `ripgrep` (`rg`) is present because `opencode` requires it.
 - `copyAuth` enables a startup hook that copies `/tmp/opencode-host-tmp/auth.json` into `$HOME/.local/share/opencode/auth.json`.
 - `copyConfig` enables the same startup hook to copy `/tmp/opencode-host-tmp/opencode.json` into `$HOME/.config/opencode/opencode.json`.
@@ -16,4 +17,3 @@
 ```json
 "initializeCommand": ".devcontainer/opencode-auth-copy"
 ```
-- If `opencode` is already installed and `version=latest`, the installer skips upgrading and reuses the existing binary.

@@ -6,6 +6,9 @@
         },
         "features": {
             "bash": {},
+            "mise": {
+                "version": "2026.11.1"
+            },
             "opencode": {}
         }
     },
