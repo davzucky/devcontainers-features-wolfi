@@ -7,6 +7,7 @@ source dev-container-features-test-lib
 check "mise on PATH" mise --version
 
 check "opencode installed" opencode --version
+check "Node not installed" sh -c '! command -v node'
 check "ripgrep installed" rg --version
 check "auth copy flag missing" test ! -f /usr/local/share/opencode-copyauth.flag
 check "config copy flag missing" test ! -f /usr/local/share/opencode-copyconfig.flag
@@ -43,5 +44,21 @@ TARGET_AUTH="${TARGET_HOME}/.local/share/opencode/auth.json"
 TARGET_CONFIG="${TARGET_HOME}/.config/opencode/opencode.json"
 check "auth file missing" test ! -f "${TARGET_AUTH}"
 check "config file missing" test ! -f "${TARGET_CONFIG}"
+
+SYSTEM_VERSION=$(opencode --version)
+adduser -D opencode-test
+check "project version installs without Node" su opencode-test -s /bin/sh -c '
+    set -e
+    cd "$HOME"
+    mkdir project
+    cd project
+    printf "[tools]\nopencode = \"2.2.4\"\n" > mise.toml
+    mise trust
+    mise install opencode
+    [ "$(opencode --version)" = "opencode v2.2.4" ]
+    case "$(mise which opencode)" in "$HOME"/*) ;; *) exit 1 ;; esac
+    ! command -v node
+'
+check "system default unchanged" test "$(opencode --version)" = "${SYSTEM_VERSION}"
 
 reportResults

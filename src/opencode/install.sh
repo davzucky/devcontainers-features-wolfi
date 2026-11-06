@@ -8,6 +8,12 @@ COPY_CONFIG=${COPYCONFIG:-"false"}
 apk update
 apk add --no-cache ca-certificates libgcc libstdc++ ripgrep
 
+# Keep image and project installs on the native binary backend.
+cat > /etc/mise/conf.d/opencode.toml <<'EOF'
+[tool_alias]
+opencode = "aqua:anomalyco/opencode"
+EOF
+
 mise install --system "opencode@${VERSION#v}"
 mise use --pin --path /etc/mise/conf.d/opencode.toml "opencode@${VERSION#v}"
 mise reshim --system
