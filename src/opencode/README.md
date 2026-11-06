@@ -42,4 +42,4 @@ Installs opencode CLI on Wolfi base images.
 
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/davzucky/devcontainers-features-wolfi/blob/main//tmp/tmp5bqll087/opencode/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/davzucky/devcontainers-features-wolfi/blob/main/src/opencode/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
