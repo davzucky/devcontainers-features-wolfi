@@ -1,0 +1,22 @@
+{
+    "default": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "orca": {}
+        }
+    },
+    "configured_autostart": {
+        "image": "chainguard/wolfi-base:latest",
+        "features": {
+            "bash": {},
+            "orca": {
+                "version": "1.4.249",
+                "autoStart": true,
+                "baseDir": "/tmp/devpod orca/orca's profile",
+                "port": "6769",
+                "pairingAddress": "127.0.0.1"
+            }
+        }
+    }
+}
